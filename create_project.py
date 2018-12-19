@@ -62,7 +62,10 @@ def run_script(driver):
     elif base == 'Python3 Data Science':
         driver.find_element_by_xpath("//h6[contains(text(), 'Python3 Data Science Quick-Start')]").click()
     elif base == 'Python3 Minimal':
-        driver.find_element_by_xpath("//p[contains(text(), 'A minimal Base containing Python 3.6 and JupyterLab with no additional packages')]").click()
+        py3min = driver.find_element_by_xpath("//h6[contains(text(), 'Python3 Minimal')]")
+        while py3min.is_displayed() == False:
+            driver.find_element_by_css_selector("button[class='slick-arrow slick-next']").click()
+        driver.find_element_by_xpath("//h6[contains(text(), 'Python3 Minimal')]").click()
     elif base == 'R Tidyverse':
         driver.find_element_by_xpath("//li[contains(text(), 'R')]").click()
         driver.find_element_by_xpath("//p[contains(text(), 'A JupyterLab install for CRAN PPA R + tidyverse packages, etc.')]").click()
@@ -71,15 +74,16 @@ def run_script(driver):
     driver.find_element_by_xpath("//button[contains(text(), 'Create Project')]").click()
 
     #check if build is stopped
-    stop = driver.find_element_by_css_selector("div[class='ContainerStatus__container-state Stopped")
-    while stop.is_displayed() == False:
-        time.sleep(20)
+    #stop = driver.find_element_by_css_selector("div[class='ContainerStatus__container-state Stopped")
+    #while stop.is_displayed() == False:
+    time.sleep(20)
 
     #add packages
     driver.find_element_by_xpath("//a[contains(text(), 'Environment')]").click()
     #need to add option for conda3 and apt here
 
     #check if build is stopped
+    stop =
     while stop.is_displayed() == False:
         time.sleep(20)
 
