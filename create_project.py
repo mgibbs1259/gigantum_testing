@@ -1,10 +1,17 @@
-from selenium import webdriver
+import logging
 import uuid
 import time
 
+from selenium import webdriver
+
+import testutils
+
+
+username, password = testutils.load_credentials()
+
 #set driver
-#can also set to Firefox
-driver = webdriver.Chrome()
+driver = testutils.load_chrome_driver()
+
 driver.get("localhost:10000/projects/local#")
 driver.implicitly_wait(30)
 
@@ -13,11 +20,11 @@ driver.find_element_by_class_name("Login__button").click()
 
 #username
 driver.find_element_by_css_selector("input[name='username']").click()
-driver.find_element_by_css_selector("input[name='username']").send_keys(input('Enter your username: '))
+driver.find_element_by_css_selector("input[name='username']").send_keys(username)
 
 #password
 driver.find_element_by_css_selector("input[name='password']").click()
-driver.find_element_by_css_selector("input[name='password']").send_keys(input('Enter your password: '))
+driver.find_element_by_css_selector("input[name='password']").send_keys(password)
 
 #submit
 driver.find_element_by_css_selector("button[type='submit']").click()
