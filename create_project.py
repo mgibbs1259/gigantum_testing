@@ -2,6 +2,7 @@ import logging
 import uuid
 import time
 
+import selenium
 import testutils
 
 logging.basicConfig(level=logging.INFO)
@@ -11,7 +12,7 @@ def run_script(driver):
     logging.info(f"Using username {username}")
 
     driver.get("localhost:10000/projects/local#")
-    driver.implicitly_wait(5)
+    driver.implicitly_wait(15)
 
     #get past login
     logging.info("Logging in")
@@ -62,10 +63,11 @@ def run_script(driver):
     elif base == 'Python3 Data Science':
         driver.find_element_by_xpath("//h6[contains(text(), 'Python3 Data Science Quick-Start')]").click()
     elif base == 'Python3 Minimal':
-        py3min = driver.find_element_by_xpath("//h6[contains(text(), 'Python3 Minimal')]")
-        while py3min.is_displayed() == False:
+        py3min = driver.find_element_by_xpath("//p[contains(text(), 'A minimal Base containing Python 3.6')]")
+        while not py3min.is_displayed():
+            logging.info("Searching for Python 3.6 Minimal base...")
             driver.find_element_by_css_selector("button[class='slick-arrow slick-next']").click()
-        driver.find_element_by_xpath("//h6[contains(text(), 'Python3 Minimal')]").click()
+        py3min.click()
     elif base == 'R Tidyverse':
         driver.find_element_by_xpath("//li[contains(text(), 'R')]").click()
         driver.find_element_by_xpath("//p[contains(text(), 'A JupyterLab install for CRAN PPA R + tidyverse packages, etc.')]").click()
@@ -74,18 +76,16 @@ def run_script(driver):
     driver.find_element_by_xpath("//button[contains(text(), 'Create Project')]").click()
 
     #check if build is stopped
-    #stop = driver.find_element_by_css_selector("div[class='ContainerStatus__container-state Stopped")
+    stop = driver.find_element_by_css_selector("div[class='ContainerStatus__container-state Stopped")
     #while stop.is_displayed() == False:
-    time.sleep(20)
 
     #add packages
     driver.find_element_by_xpath("//a[contains(text(), 'Environment')]").click()
     #need to add option for conda3 and apt here
 
     #check if build is stopped
-    stop =
     while stop.is_displayed() == False:
-        time.sleep(20)
+        time.sleep(3)
 
     #add packages
     driver.find_element_by_xpath("//*[@id='root']/div/div[3]/div[1]/div[1]/div[2]/div/div[4]/div/div[2]/button").click()
