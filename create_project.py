@@ -43,7 +43,7 @@ def run_script(driver):
 
     #create project title
     driver.find_element_by_css_selector("input[maxlength='36']").click()
-    driver.find_element_by_css_selector("input[maxlength='36']").send_keys('selenium-project-' + str(uuid.uuid4())[:6])
+    driver.find_element_by_css_selector("input[maxlength='36']").send_keys(testutils.unique_project_name())
 
     #create project description
     driver.find_element_by_css_selector("textarea[class='CreateLabbook__description-input']").click()
@@ -54,8 +54,9 @@ def run_script(driver):
 
     #select base
     #bases can be - Python2 Minimal, Python3 Data Science, Python3 Minimal, R Tidyverse
-    base = input('Enter base: ')
-    if base == 'Python2 Minimal':
+    #base = input('Enter base: ')
+    base = 'Python3 Minimal'
+    if base == 'Python2 Data Science':
         driver.find_element_by_xpath("//li[contains(text(), 'python2')]").click()
         driver.find_element_by_xpath("//p[contains(text(), 'A minimal Base containing Python 2.7 and JupyterLab with no additional packages')]").click()
     elif base == 'Python3 Data Science':
