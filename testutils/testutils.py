@@ -5,7 +5,7 @@ from selenium import webdriver
 
 
 def load_chrome_driver():
-    return webdriver.Chrome('/Users/bill/Desktop/chromedriver')
+    return webdriver.Chrome()
 
 def load_firefox_driver():
     return webdriver.Firefox()

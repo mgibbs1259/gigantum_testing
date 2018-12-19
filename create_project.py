@@ -4,35 +4,38 @@ import time
 
 import testutils
 
+logging.basicConfig(level=logging.INFO)
 
-def run_script():
+def run_script(driver):
     username, password = testutils.load_credentials()
     logging.info(f"Using username {username}")
 
-    #set driver
-    driver = testutils.load_chrome_driver()
-
     driver.get("localhost:10000/projects/local#")
-    driver.implicitly_wait(30)
+    driver.implicitly_wait(5)
 
     #get past login
+    logging.info("Logging in")
     driver.find_element_by_class_name("Login__button").click()
 
     #username
+    logging.info("Putting in username and password fields")
     driver.find_element_by_css_selector("input[name='username']").click()
     driver.find_element_by_css_selector("input[name='username']").send_keys(username)
-
-    #password
     driver.find_element_by_css_selector("input[name='password']").click()
     driver.find_element_by_css_selector("input[name='password']").send_keys(password)
 
     #submit
-    driver.find_element_by_css_selector("button[type='submit']").click()
+    #logging.info("Clicking submit to log in")
+    #time.sleep(3)
+    #driver.find_element_by_css_selector("button[type='submit']").click()
 
     #turn off Got it!
+    logging.info("Getting rid of Got it! button")
+    time.sleep(3)
     driver.find_element_by_css_selector("button[class='button--green']").click()
 
     #turn off guide
+    logging.info("Turning off guide")
     driver.find_element_by_css_selector("span[class='Helper-guide-slider']").click()
 
     #create new project
@@ -98,9 +101,11 @@ def run_script():
 
 if __name__ == '__main__':
     try:
-        run_script()
+        #set driver
+        driver = testutils.load_chrome_driver()
+        run_script(driver)
     finally:
-        logger.info("Closing driver")
+        logging.info("Closing driver")
         driver.close()
 
 #next steps - invalid login, invalid packages, file upload, change in jupyter lab, activity
