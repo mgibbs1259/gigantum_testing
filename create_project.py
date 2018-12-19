@@ -82,6 +82,7 @@ def run_script(driver):
 
     #add packages
     driver.find_element_by_xpath("//a[contains(text(), 'Environment')]").click()
+    time.sleep(3)
     #need to add option for conda3 and apt here
 
     #check if build is stopped
