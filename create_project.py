@@ -2,8 +2,6 @@ from selenium import webdriver
 import uuid
 import time
 
-
-
 #set driver
 #can also set to Firefox
 driver = webdriver.Chrome()
@@ -64,8 +62,6 @@ for pack in packages:
     driver.find_element_by_css_selector("input[placeholder='Enter Dependency Name']").send_keys(pack)
     driver.find_element_by_xpath("//*[@id='root']/div/div[3]/div[1]/div[1]/div[2]/div/div[4]/div/div[2]/div/div[1]/button").click()
 driver.find_element_by_xpath("//button[contains(text(), 'Install Selected Packages')]").click()
-
-
 
 #driver.close()
 
