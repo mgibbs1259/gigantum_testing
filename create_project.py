@@ -76,31 +76,32 @@ def run_script(driver):
     driver.find_element_by_xpath("//button[contains(text(), 'Create Project')]").click()
 
     #check if build is stopped
-    stop = driver.find_element_by_css_selector("div[class='ContainerStatus__container-state Stopped")
+    #stop = driver.find_element_by_css_selector("div[class='ContainerStatus__container-state Stopped")
     #while stop.is_displayed() == False:
+    time.sleep(15)
 
     #add packages
     driver.find_element_by_xpath("//a[contains(text(), 'Environment')]").click()
     #need to add option for conda3 and apt here
 
     #check if build is stopped
-    while stop.is_displayed() == False:
-        time.sleep(3)
+    #while stop.is_displayed() == False:
+    time.sleep(5)
 
     #add packages
     driver.find_element_by_xpath("//*[@id='root']/div/div[3]/div[1]/div[1]/div[2]/div/div[4]/div/div[2]/button").click()
-
+    time.sleep(2)
     #iterate to add packages for Python bases
-    if base == [pack for pack in ['Python2 Minimal', 'Python3 Data Science', 'Python3 Minimal']]:
-        packages = ['pandas', 'numpy', 'matplotlib']
-        for pack in packages:
-            driver.find_element_by_css_selector("input[class='PackageDependencies__input']").click()
-            driver.find_element_by_css_selector("input[placeholder='Enter Dependency Name']").send_keys(pack)
-            driver.find_element_by_xpath("//*[@id='root']/div/div[3]/div[1]/div[1]/div[2]/div/div[4]/div/div[2]/div/div[1]/button").click()
-    else:
-        pass
+    #if base == [pack for pack in ['Python2 Minimal', 'Python3 Data Science', 'Python3 Minimal']]:
+    packages = ['pandas', 'numpy', 'matplotlib']
+    for pack in packages:
+        driver.find_element_by_css_selector("input[class='PackageDependencies__input']").click()
+        driver.find_element_by_css_selector("input[placeholder='Enter Dependency Name']").send_keys(pack)
+        driver.find_element_by_xpath("//*[@id='root']/div/div[3]/div[1]/div[1]/div[2]/div/div[4]/div/div[2]/div/div[1]/button").click()
+    #else:
+        #pass
     driver.find_element_by_xpath("//button[contains(text(), 'Install Selected Packages')]").click()
-
+    time.sleep(5)
 #file upload
 
 
