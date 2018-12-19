@@ -8,6 +8,7 @@ import testutils
 
 
 username, password = testutils.load_credentials()
+logging.info(f"Using username {username}")
 
 #set driver
 driver = testutils.load_chrome_driver()
