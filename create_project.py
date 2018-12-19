@@ -65,6 +65,8 @@ for pack in packages:
     driver.find_element_by_xpath("//*[@id='root']/div/div[3]/div[1]/div[1]/div[2]/div/div[4]/div/div[2]/div/div[1]/button").click()
 driver.find_element_by_xpath("//button[contains(text(), 'Install Selected Packages')]").click()
 
-driver.close()
+
+
+#driver.close()
 
 #next steps - invalid login, invalid packages, file upload, change in jupyter lab, activity
