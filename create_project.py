@@ -2,8 +2,6 @@ import logging
 import uuid
 import time
 
-from selenium import webdriver
-
 import testutils
 
 
@@ -51,25 +49,51 @@ driver.find_element_by_css_selector("textarea[class='CreateLabbook__description-
 driver.find_element_by_xpath("//button[contains(text(), 'Continue')]").click()
 
 #select base
-driver.find_element_by_xpath("//p[contains(text(), 'A minimal Base containing Python 3.6 and JupyterLab with no additional packages')]").click()
+#bases can be - Python2 Minimal, Python3 Data Science, Python3 Minimal, R Tidyverse
+base = input('Enter base: ')
+if base == 'Python2 Minimal':
+    driver.find_element_by_xpath("//li[contains(text(), 'python2')]").click()
+    driver.find_element_by_xpath("//p[contains(text(), 'A minimal Base containing Python 2.7 and JupyterLab with no additional packages')]").click()
+elif base == 'Python3 Data Science':
+    driver.find_element_by_xpath("//h6[contains(text(), 'Python3 Data Science Quick-Start')]").click()
+elif base == 'Python3 Minimal':
+    driver.find_element_by_xpath("//p[contains(text(), 'A minimal Base containing Python 3.6 and JupyterLab with no additional packages')]").click()
+elif base == 'R Tidyverse':
+    driver.find_element_by_xpath("//li[contains(text(), 'R')]").click()
+    driver.find_element_by_xpath("//p[contains(text(), 'A JupyterLab install for CRAN PPA R + tidyverse packages, etc.')]").click()
 
 #create project
 driver.find_element_by_xpath("//button[contains(text(), 'Create Project')]").click()
 
+#check if build is stopped
+stop = driver.find_element_by_css_selector("div[class='ContainerStatus__container-state Stopped")
+while stop.is_displayed() == False:
+    time.sleep(20)
+
 #add packages
 driver.find_element_by_xpath("//a[contains(text(), 'Environment')]").click()
 #need to add option for conda3 and apt here
-#check with selenium if stopped
-time.sleep(15)
+
+#check if build is stopped
+while stop.is_displayed() == False:
+    time.sleep(20)
+
+#add packages
 driver.find_element_by_xpath("//*[@id='root']/div/div[3]/div[1]/div[1]/div[2]/div/div[4]/div/div[2]/button").click()
 
-#iterate to add packages
-packages = ['pandas', 'numpy', 'matplotlib']
-for pack in packages:
-    driver.find_element_by_css_selector("input[class='PackageDependencies__input']").click()
-    driver.find_element_by_css_selector("input[placeholder='Enter Dependency Name']").send_keys(pack)
-    driver.find_element_by_xpath("//*[@id='root']/div/div[3]/div[1]/div[1]/div[2]/div/div[4]/div/div[2]/div/div[1]/button").click()
+#iterate to add packages for Python bases
+if base == [pack for pack in ['Python2 Minimal', 'Python3 Data Science', 'Python3 Minimal']]:
+    packages = ['pandas', 'numpy', 'matplotlib']
+    for pack in packages:
+        driver.find_element_by_css_selector("input[class='PackageDependencies__input']").click()
+        driver.find_element_by_css_selector("input[placeholder='Enter Dependency Name']").send_keys(pack)
+        driver.find_element_by_xpath("//*[@id='root']/div/div[3]/div[1]/div[1]/div[2]/div/div[4]/div/div[2]/div/div[1]/button").click()
+else:
+    pass
 driver.find_element_by_xpath("//button[contains(text(), 'Install Selected Packages')]").click()
+
+#file upload
+
 
 #driver.close()
 
