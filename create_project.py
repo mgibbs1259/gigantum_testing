@@ -26,11 +26,6 @@ def run_script(driver):
     auth0_elts.password_input.click()
     auth0_elts.password_input.send_keys(password)
 
-    #submit
-    #logging.info("Clicking submit to log in")
-    #time.sleep(3)
-    #driver.find_element_by_css_selector("button[type='submit']").click()
-
     #turn off Got it!
     logging.info("Getting rid of Got it! button")
     time.sleep(3)
