@@ -6,11 +6,11 @@ class UiElement(object):
 class Auth0LoginElements(UiElement):
     @property
     def username_input(self):
-        return driver.find_element_by_css_selector("input[name='username']")
+        return self.driver.find_element_by_css_selector("input[name='username']")
 
     @property
-    def password_input(self)
-        return driver.find_element_by_css_selector("input[name='password']")
+    def password_input(self):
+        return self.driver.find_element_by_css_selector("input[name='password']")
 
 
 class CreateProjectElements(UiElement):

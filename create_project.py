@@ -20,7 +20,7 @@ def run_script(driver):
 
     #username
     logging.info("Putting in username and password fields")
-    auth0_elts = Auth0LoginElements(driver)
+    auth0_elts = testutils.Auth0LoginElements(driver)
     auth0_elts.username_input.click()
     auth0_elts.username_input.send_keys(username)
     auth0_elts.password_input.click()
