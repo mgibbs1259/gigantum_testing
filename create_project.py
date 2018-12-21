@@ -81,9 +81,6 @@ def run_script(driver):
     time.sleep(3)
     #need to add option for conda3 and apt here
 
-    #check if build is stopped
-    time.sleep(5)
-
     #add packages
     driver.find_element_by_xpath("//*[@id='root']/div/div[3]/div[1]/div[1]/div[2]/div/div[4]/div/div[2]/button").click()
     time.sleep(2)
@@ -94,11 +91,8 @@ def run_script(driver):
         driver.find_element_by_css_selector("input[class='PackageDependencies__input']").click()
         driver.find_element_by_css_selector("input[placeholder='Enter Dependency Name']").send_keys(pack)
         driver.find_element_by_xpath("//*[@id='root']/div/div[3]/div[1]/div[1]/div[2]/div/div[4]/div/div[2]/div/div[1]/button").click()
-    #else:
-        #pass
     driver.find_element_by_xpath("//button[contains(text(), 'Install Selected Packages')]").click()
     time.sleep(5)
-#file upload
 
 
 if __name__ == '__main__':
@@ -107,6 +101,8 @@ if __name__ == '__main__':
         driver = testutils.load_chrome_driver()
         run_script(driver)
     finally:
+        # Note - whether there is an exception or not we need to cleanly
+        # close down the driver
         logging.info("Closing driver")
         driver.close()
 
