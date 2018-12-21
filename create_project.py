@@ -20,10 +20,11 @@ def run_script(driver):
 
     #username
     logging.info("Putting in username and password fields")
-    driver.find_element_by_css_selector("input[name='username']").click()
-    driver.find_element_by_css_selector("input[name='username']").send_keys(username)
-    driver.find_element_by_css_selector("input[name='password']").click()
-    driver.find_element_by_css_selector("input[name='password']").send_keys(password)
+    auth0_elts = Auth0LoginElements(driver)
+    auth0_elts.username_input.click()
+    auth0_elts.username_input.send_keys(username)
+    auth0_elts.password_input.click()
+    auth0_elts.password_input.send_keys(password)
 
     #submit
     #logging.info("Clicking submit to log in")

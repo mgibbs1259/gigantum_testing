@@ -1,7 +1,17 @@
 
+class UiElement(object):
+    def __init__(self, driver):
+        self.driver = driver
 
-class Auth0LoginElements:
-    pass
+class Auth0LoginElements(UiElement):
+    @property
+    def username_input(self):
+        return driver.find_element_by_css_selector("input[name='username']")
 
-class CreateProjectElements:
+    @property
+    def password_input(self)
+        return driver.find_element_by_css_selector("input[name='password']")
+
+
+class CreateProjectElements(UiElement):
     pass
