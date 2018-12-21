@@ -23,4 +23,3 @@ def load_credentials(path: str = 'credentials.txt'):
     # Return username (first line) and pasword (second line)
     return lines[0], lines[1]
 
-

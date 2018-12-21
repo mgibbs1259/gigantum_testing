@@ -11,6 +11,7 @@ def run_script(driver):
     username, password = testutils.load_credentials()
     logging.info(f"Using username {username}")
 
+    # Open up the browser
     driver.get("localhost:10000/projects/local#")
     driver.implicitly_wait(15)
 
@@ -51,7 +52,7 @@ def run_script(driver):
 
     #select base
     #bases can be - Python2 Minimal, Python3 Data Science, Python3 Minimal, R Tidyverse
-    #base = input('Enter base: ')
+    # TODO - Factor this into a method and create a new project for each basew
     base = 'Python3 Minimal'
     if base == 'Python2 Data Science':
         driver.find_element_by_xpath("//li[contains(text(), 'python2')]").click()
