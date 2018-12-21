@@ -82,7 +82,6 @@ def run_script(driver):
     #need to add option for conda3 and apt here
 
     #check if build is stopped
-    #while stop.is_displayed() == False:
     time.sleep(5)
 
     #add packages
