@@ -7,6 +7,9 @@ import testutils
 
 logging.basicConfig(level=logging.INFO)
 
+class Selectors:
+    labbook_name = '.CreateLabbook input'
+
 def run_script(driver):
     username, password = testutils.load_credentials()
     logging.info(f"Using username {username}")
@@ -40,8 +43,8 @@ def run_script(driver):
     driver.find_element_by_css_selector("div[class='btn--import']").click()
 
     #create project title
-    driver.find_element_by_css_selector("input[maxlength='36']").click()
-    driver.find_element_by_css_selector("input[maxlength='36']").send_keys(testutils.unique_project_name())
+    driver.find_element_by_css_selector(Selectors.labbook_name).click()
+    driver.find_element_by_css_selector(Selectors.labbook_name).send_keys(testutils.unique_project_name())
 
     #create project description
     driver.find_element_by_css_selector("textarea[class='CreateLabbook__description-input']").click()
@@ -83,7 +86,7 @@ def run_script(driver):
     #need to add option for conda3 and apt here
 
     #add packages
-    driver.find_element_by_xpath("//*[@id='root']/div/div[3]/div[1]/div[1]/div[2]/div/div[4]/div/div[2]/button").click()
+    driver.find_element_by_css_selector("button.PackageDependencies__btn").click()
     time.sleep(2)
     #iterate to add packages for Python bases
     #if base == [pack for pack in ['Python2 Minimal', 'Python3 Data Science', 'Python3 Minimal']]:
