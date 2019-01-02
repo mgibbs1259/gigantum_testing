@@ -12,6 +12,5 @@ class Auth0LoginElements(UiElement):
     def password_input(self):
         return self.driver.find_element_by_css_selector("input[name='password']")
 
-
 class CreateProjectElements(UiElement):
     pass
