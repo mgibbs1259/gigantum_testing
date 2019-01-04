@@ -10,7 +10,8 @@ logging.basicConfig(level=logging.INFO)
 class Elements:
 
     # log in
-    logIn = ".Login__button"
+    logInGreen = ".Login__button"
+    logInGrey = ".auth-lock-submit"
     gotIt = ".button--green"
 
     # remove guide
@@ -77,7 +78,7 @@ class CreateProject(Elements):
         self.driver.get("localhost:10000/projects/local#")
         self.driver.implicitly_wait(15)
         # log in button
-        self.driver.find_element_by_css_selector(Elements.logIn).click()
+        self.driver.find_element_by_css_selector(Elements.logInGreen).click()
         # username and password
         logging.info("Putting in username and password")
         auth0_elts = testutils.Auth0LoginElements(driver)
@@ -85,6 +86,8 @@ class CreateProject(Elements):
         auth0_elts.username_input.send_keys(username)
         auth0_elts.password_input.click()
         auth0_elts.password_input.send_keys(password)
+        # log in with credentials
+        self.driver.find_element_by_css_selector(Elements.logInGrey).click()
         return self.driver
 
     def remove_guide(self):
