@@ -165,6 +165,11 @@ class CreateProject(Elements):
         self.driver.find_element_by_css_selector(Elements.createProject).click()
         return self.driver
 
+    def container_status(self):
+        """ Check whether container is building, running, or stopped """
+        #implement
+
+
     def pip_packages(self):
         """ Add pip packages """
         logging.info("Adding pip packages")
@@ -172,13 +177,32 @@ class CreateProject(Elements):
         self.driver.find_element_by_css_selector(Elements.environment).click()
         # add pip packages
         self.driver.find_element_by_css_selector(Elements.addPackages).click()
-        for package in ['pandas', 'numpy', 'matplotlib']:
-            self.driver.find_element_by_css_selector(Elements.packageName).send_keys(package)
-            time.sleep(1)
+        for pip_pack in ['pandas', 'numpy', 'matplotlib']:
+            self.driver.find_element_by_css_selector(Elements.packageName).send_keys(pip_pack)
+            time.sleep(3)
             self.driver.find_element_by_css_selector(Elements.addButton).click()
-            time.sleep(1)
+            time.sleep(3)
         self.driver.find_element_by_css_selector(Elements.installPackages).click()
         return self.driver
+
+    def conda3_packages(self):
+        """ Add conda3 packages """
+        logging.info("Adding conda3 packages")
+        # find environment tab
+        self.driver.find_element_by_css_selector(Elements.environment).click()
+        # find conda3 tab
+        self.driver.find_element_by_css_selector(Elements.conda3).click()
+        # add conda3 packages
+        self.driver.find_element_by_css_selector(Elements.addPackages).click()
+        for conda_pack in ['pyflakes', 'odo']:
+            self.driver.find_element_by_css_selector(Elements.packageName).send_keys(conda_pack)
+            time.sleep(3)
+            self.driver.find_element_by_css_selector(Elements.addButton).click()
+            time.sleep(3)
+        self.driver.find_element_by_css_selector(Elements.installPackages).click()
+        return self.driver
+
+
 
 #test scripts
 
@@ -222,6 +246,9 @@ def all_packages(driver):
     # pip packages
     test_project.pip_packages()
     time.sleep(10)
+    # conda3 packages
+    test_project.conda3_packages()
+    time.sleep(30)
 
 if __name__ == '__main__':
     try:
@@ -230,7 +257,7 @@ if __name__ == '__main__':
         # username and password
         username, password = testutils.load_credentials()
         logging.info(f"Using username {username}")
-        all_bases(driver)
+        #all_bases(driver)
         all_packages(driver)
     finally:
         # cleanly close driver
