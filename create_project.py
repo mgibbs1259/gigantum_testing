@@ -44,17 +44,21 @@ class Elements:
     RTidy = "//h6[contains(text(), 'R Tidyverse (+ Python3) in Jupyter Quickstart')]"
 
     # project tabs
-    environment = ".LabbookHeader__navItem--environment"
+    environment = "#environment"
 
     # all environment
     addPackages = ".PackageDependencies__addPackage"
+    packageName = ".PackageDependencies__input"
+    versionName = ".PackageDependencies__input--version"
+    addButton = ".PackageDependencies__btn--add"
+    installPackages = ".PackageDependencies__btn--absolute"
 
-    # apt_
-    apt = "//li[contains(text(), 'apt (0)')]"
     # pip
     pip = "//li[contains(text(), 'pip (0)')]"
     # conda3
     conda3 = "//li[contains(text(), 'conda3 (0)')]"
+    # apt_
+    apt = "//li[contains(text(), 'apt (0)')]"
 
     # custom Docker
     customDockerEdit = ".CustomDockerfile__btn--edit"
@@ -161,6 +165,20 @@ class CreateProject(Elements):
         self.driver.find_element_by_css_selector(Elements.createProject).click()
         return self.driver
 
+    def pip_packages(self):
+        """ Add pip packages """
+        logging.info("Adding pip packages")
+        # find environment tab
+        self.driver.find_element_by_css_selector(Elements.environment).click()
+        # add pip packages
+        self.driver.find_element_by_css_selector(Elements.addPackages).click()
+        for package in ['pandas', 'numpy', 'matplotlib']:
+            self.driver.find_element_by_css_selector(Elements.packageName).send_keys(package)
+            time.sleep(1)
+            self.driver.find_element_by_css_selector(Elements.addButton).click()
+            time.sleep(1)
+        self.driver.find_element_by_css_selector(Elements.installPackages).click()
+        return self.driver
 
 #test scripts
 
@@ -193,7 +211,17 @@ def all_bases(driver):
 
 def all_packages(driver):
     """ Install packages with apt, pip, conda3 """
-    pass
+    # set up
+    test_project = CreateProject(driver)
+    test_project.log_in()
+    test_project.remove_guide()
+    test_project.create_project_no_base()
+    # python 3 minimal base
+    test_project.py3_min_base()
+    time.sleep(15)
+    # pip packages
+    test_project.pip_packages()
+    time.sleep(10)
 
 if __name__ == '__main__':
     try:
