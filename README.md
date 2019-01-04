@@ -1,5 +1,5 @@
 # Gigantum Testing
 Automation of Gigantum testing with Selenium
 
-# Getting ChromeDriver
+### Getting ChromeDriver
 Using MacOS brew install chromedriver
