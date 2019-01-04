@@ -54,11 +54,11 @@ class Elements:
     installPackages = ".PackageDependencies__btn--absolute"
 
     # pip
-    pip = "//li[contains(text(), 'pip (0)')]"
-    # conda3
-    conda3 = "//li[contains(text(), 'conda3 (0)')]"
+    pip = ".PackageDependencies__tab:first-child"
     # apt_
-    apt = "//li[contains(text(), 'apt (0)')]"
+    apt = ".PackageDependencies__tab:nth-child(3)"
+    # conda3
+    conda3 = ".PackageDependencies__tab:nth-child(2)"
 
     # custom Docker
     customDockerEdit = ".CustomDockerfile__btn--edit"
@@ -170,7 +170,7 @@ class CreateProject(Elements):
         #implement
 
 
-    def pip_packages(self):
+    def pip_package(self):
         """ Add pip packages """
         logging.info("Adding pip packages")
         # find environment tab
@@ -179,29 +179,43 @@ class CreateProject(Elements):
         self.driver.find_element_by_css_selector(Elements.addPackages).click()
         for pip_pack in ['pandas', 'numpy', 'matplotlib']:
             self.driver.find_element_by_css_selector(Elements.packageName).send_keys(pip_pack)
-            time.sleep(3)
+            time.sleep(4)
             self.driver.find_element_by_css_selector(Elements.addButton).click()
-            time.sleep(3)
+            time.sleep(4)
         self.driver.find_element_by_css_selector(Elements.installPackages).click()
         return self.driver
 
-    def conda3_packages(self):
-        """ Add conda3 packages """
-        logging.info("Adding conda3 packages")
+    def conda3_package(self):
+        """ Add conda3 package """
+        logging.info("Adding conda3 package")
         # find environment tab
         self.driver.find_element_by_css_selector(Elements.environment).click()
         # find conda3 tab
         self.driver.find_element_by_css_selector(Elements.conda3).click()
         # add conda3 packages
         self.driver.find_element_by_css_selector(Elements.addPackages).click()
-        for conda_pack in ['pyflakes', 'odo']:
-            self.driver.find_element_by_css_selector(Elements.packageName).send_keys(conda_pack)
-            time.sleep(3)
-            self.driver.find_element_by_css_selector(Elements.addButton).click()
-            time.sleep(3)
+        self.driver.find_element_by_css_selector(Elements.packageName).send_keys('pyflakes')
+        time.sleep(4)
+        self.driver.find_element_by_css_selector(Elements.addButton).click()
+        time.sleep(4)
         self.driver.find_element_by_css_selector(Elements.installPackages).click()
         return self.driver
 
+    def apt_package(self):
+        """ Add apt package """
+        logging.info("Adding apt packages")
+        # find environment tab
+        self.driver.find_element_by_css_selector(Elements.environment).click()
+        # find apt tab
+        self.driver.find_element_by_css_selector(Elements.apt).click()
+        # add apt packages
+        self.driver.find_element_by_css_selector(Elements.addPackages).click()
+        self.driver.find_element_by_css_selector(Elements.packageName).send_keys('apache2')
+        time.sleep(4)
+        self.driver.find_element_by_css_selector(Elements.addButton).click()
+        time.sleep(4)
+        self.driver.find_element_by_css_selector(Elements.installPackages).click()
+        return self.driver
 
 
 #test scripts
@@ -244,11 +258,14 @@ def all_packages(driver):
     test_project.py3_min_base()
     time.sleep(15)
     # pip packages
-    test_project.pip_packages()
+    test_project.pip_package()
     time.sleep(10)
-    # conda3 packages
-    test_project.conda3_packages()
-    time.sleep(30)
+    # conda3 package
+    test_project.conda3_package()
+    time.sleep(60)
+    # apt package
+    test_project.apt_package()
+    time.sleep(60)
 
 if __name__ == '__main__':
     try:
