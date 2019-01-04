@@ -262,10 +262,12 @@ def all_packages(driver):
     time.sleep(10)
     # conda3 package
     test_project.conda3_package()
-    time.sleep(60)
+    time.sleep(90)
     # apt package
     test_project.apt_package()
     time.sleep(60)
+
+#testtest
 
 if __name__ == '__main__':
     try:
@@ -274,8 +276,8 @@ if __name__ == '__main__':
         # username and password
         username, password = testutils.load_credentials()
         logging.info(f"Using username {username}")
-        #all_bases(driver)
-        all_packages(driver)
+        all_bases(driver)
+        #all_packages(driver)
     finally:
         # cleanly close driver
         logging.info("Closing driver")
