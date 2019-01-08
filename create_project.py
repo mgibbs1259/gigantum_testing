@@ -7,66 +7,7 @@ import testutils
 
 logging.basicConfig(level=logging.INFO)
 
-class Elements:
-
-    # log in
-    logInGreen = ".Login__button"
-    logInGrey = ".auth-lock-submit"
-    gotIt = ".button--green"
-
-    # remove guide
-    guide = ".Helper-guide-slider"
-    helper = ".Helper__button--side-view"
-
-    # create project
-    project = ".btn--import"
-    projectTitle = ".CreateLabbook input"
-    projectDescription = ".CreateLabbook__description-input"
-    projectContinue = "//button[contains(text(), 'Continue')]"
-
-    # all bases
-    sideArrow = ".slick-arrow slick-next"
-    createProject = ".ButtonLoader "
-    projectsPage = ".SideBar__icon"
-
-    # py2 min base
-    py2 = "//li[contains(text(), 'python2')]"
-    py2Min = "//h6[contains(text(), 'Python2 Minimal')]"
-
-    # py3 min base
-    py3 = "//li[contains(text(), 'python3')]"
-    py3Min = "//h6[contains(text(), 'Python3 Minimal')]"
-
-    # py3 DS base
-    py3DS = "//h6[contains(text(), 'Python3 Data Science Quick-Start')]"
-
-    # RTidy base
-    R = "//li[contains(text(), 'R')]"
-    RTidy = "//h6[contains(text(), 'R Tidyverse (+ Python3) in Jupyter Quickstart')]"
-
-    # project tabs
-    environment = "#environment"
-
-    # all environment
-    addPackages = ".PackageDependencies__addPackage"
-    packageName = ".PackageDependencies__input"
-    versionName = ".PackageDependencies__input--version"
-    addButton = ".PackageDependencies__btn--add"
-    installPackages = ".PackageDependencies__btn--absolute"
-
-    # pip
-    pip = ".PackageDependencies__tab:first-child"
-    # apt_
-    apt = ".PackageDependencies__tab:nth-child(3)"
-    # conda3
-    conda3 = ".PackageDependencies__tab:nth-child(2)"
-
-    # custom Docker
-    customDockerEdit = ".CustomDockerfile__btn--edit"
-    customDockerText = ".CustomDockerfile__textarea"
-    customDockerSave = ".CustomDockerfile__content-save-button"
-
-class CreateProject(Elements):
+class CreateProject():
 
     def __init__(self, driver):
         self.driver = driver
@@ -74,98 +15,121 @@ class CreateProject(Elements):
     def log_in(self):
         """ Log into Gigantum """
         logging.info("Logging in")
-        # set up browser
-        self.driver.get("localhost:10000/projects/local#")
+        # set up browserq
+        self.driver.get("http://localhost:10000/projects/local#")
         self.driver.implicitly_wait(15)
         # log in button
-        self.driver.find_element_by_css_selector(Elements.logInGreen).click()
-        # username and password
-        logging.info("Putting in username and password")
         auth0_elts = testutils.Auth0LoginElements(driver)
+        auth0_elts.login_green_button.click()
+        # username and password
+        time.sleep(2)
+        logging.info("Putting in username and password")
         auth0_elts.username_input.click()
         auth0_elts.username_input.send_keys(username)
         auth0_elts.password_input.click()
         auth0_elts.password_input.send_keys(password)
         # log in with credentials
-        self.driver.find_element_by_css_selector(Elements.logInGrey).click()
+        try:
+            auth0_elts.login_grey_button.click()
+        except:
+            pass
         return self.driver
 
     def remove_guide(self):
         """ Remove "Got it!", guide, and helper """
         logging.info("Getting rid of 'Got it!'")
+        guide_elts = testutils.GuideElements(driver)
         # get rid of Got it!
-        self.driver.find_element_by_css_selector(Elements.gotIt).click()
+        time.sleep(2)
+        guide_elts.got_it_button.click()
         logging.info("Turning off guide and helper")
         # turn off guide and helper
-        self.driver.find_element_by_css_selector(Elements.guide).click()
-        self.driver.find_element_by_css_selector(Elements.helper).click()
+        guide_elts.guide_button.click()
+        guide_elts.helper_button.click()
         return self.driver
 
     def create_project_no_base(self):
         """ Create a project without a base """
         logging.info("Creating new project")
+        proj_elts = testutils.AddProjectElements(driver)
         # create new project
-        self.driver.find_element_by_css_selector(Elements.project).click()
+        proj_elts.create_new_button.click()
         # create project title
-        self.driver.find_element_by_css_selector(Elements.projectTitle).click()
-        self.driver.find_element_by_css_selector(Elements.projectTitle).send_keys(testutils.unique_project_name())
+        proj_elts.project_title_input.click()
+        proj_elts.project_title_input.send_keys(testutils.unique_project_name())
         # create project description
-        self.driver.find_element_by_css_selector(Elements.projectDescription).click()
-        self.driver.find_element_by_css_selector(Elements.projectDescription).send_keys(testutils.unique_project_description())
+        proj_elts.project_description_input.click()
+        proj_elts.project_description_input.send_keys(testutils.unique_project_description())
         # continue creating project
-        self.driver.find_element_by_xpath(Elements.projectContinue).click()
+        proj_elts.project_continue_button.click()
         return self.driver
 
     def py2_min_base(self):
         """ Add a Python2 Minimal base """
         logging.info("Creating new project with Python2 Minimal base")
+        py2_base_elts = testutils.AddProjectBaseElements(driver)
         # find python2 tab
-        self.driver.find_element_by_xpath(Elements.py2).click()
+        try:
+            py2_base_elts.py2_tab_button.click()
+        except:
+            pass
         # select python2 minimal base
-        while not self.driver.find_element_by_xpath(Elements.py2Min).is_displayed():
+        while not py2_base_elts.py2_minimal_base_button.is_displayed():
             logging.info("Searching for Python2 Minimal base...")
-            self.driver.find_element_by_css_selector(Elements.sideArrow).click()
-        self.driver.find_element_by_xpath(Elements.py2Min).click()
-        self.driver.find_element_by_css_selector(Elements.createProject).click()
+            py2_base_elts.arrow_button.click()
+        py2_base_elts.py2_minimal_base_button.click()
+        py2_base_elts.create_project_button.click()
         return self.driver
 
     def py3_min_base(self):
         """ Add a Python3 Minimal base """
         logging.info("Creating new project with Python3 Minimal base")
+        py3_base_elts = testutils.AddProjectBaseElements(driver)
         # find python3 tab
-        self.driver.find_element_by_xpath(Elements.py3).click()
+        try:
+            py3_base_elts.py3_tab_button.click()
+        except:
+            pass
         # select python3 minimal base
-        while not self.driver.find_element_by_xpath(Elements.py3Min).is_displayed():
+        while not py3_base_elts.py3_minimal_base_button.is_displayed():
             logging.info("Searching for Python3 Minimal base...")
-            self.driver.find_element_by_css_selector(Elements.sideArrow).click()
-        self.driver.find_element_by_xpath(Elements.py3Min).click()
-        self.driver.find_element_by_css_selector(Elements.createProject).click()
+            py3_base_elts.arrow_button.click()
+        py3_base_elts.py3_minimal_base_button.click()
+        py3_base_elts.create_project_button.click()
         return self.driver
 
     def py3_DS_base(self):
         """ Add a Python3 Data Science Quick-start base """
         logging.info("Creating new project with Python3 Data Science Quick-start base")
+        py3_base_elts = testutils.AddProjectBaseElements(driver)
         # find python3 tab
-        self.driver.find_element_by_xpath(Elements.py3).click()
+        try:
+            py3_base_elts.py3_tab_button.click()
+        except:
+            pass
         # select python3 data science base
-        while not self.driver.find_element_by_xpath(Elements.py3DS).is_displayed():
+        while not py3_base_elts.py3_minimal_base_button.is_displayed():
             logging.info("Searching for Python3 Data Science Quick-start base...")
-            self.driver.find_element_by_css_selector(Elements.sideArrow).click()
-        self.driver.find_element_by_xpath(Elements.py3DS).click()
-        self.driver.find_element_by_css_selector(Elements.createProject).click()
+            py3_base_elts.arrow_button.click()
+        py3_base_elts.py3_data_science_base_button.click()
+        py3_base_elts.create_project_button.click()
         return self.driver
 
     def RTidy_base(self):
         """ Add a R Tidyverse base """
         logging.info("Creating new project with R Tidyverse base")
+        R_base_elts = testutils.AddProjectBaseElements(driver)
         # find R tab
-        self.driver.find_element_by_xpath(Elements.R).click()
+        try:
+            R_base_elts.R_tab_button.click()
+        except:
+            pass
         # select R Tidyverse base
-        while not self.driver.find_element_by_xpath(Elements.RTidy).is_displayed():
+        while not R_base_elts.R_tidyverse_base_button.is_displayed():
             logging.info("Searching for R Tidyverse base...")
-            self.driver.find_element_by_css_selector(Elements.sideArrow).click()
-        self.driver.find_element_by_xpath(Elements.RTidy).click()
-        self.driver.find_element_by_css_selector(Elements.createProject).click()
+            R_base_elts.arrow_button.click()
+        R_base_elts.R_tidyverse_base_button.click()
+        R_base_elts.create_project_button.click()
         return self.driver
 
     def container_status(self):
@@ -176,50 +140,74 @@ class CreateProject(Elements):
     def pip_package(self):
         """ Add pip packages """
         logging.info("Adding pip packages")
+        environment = testutils.EnvironmentElements(driver)
         # find environment tab
-        self.driver.find_element_by_css_selector(Elements.environment).click()
+        environment.environment_tab_button.click()
         # add pip packages
-        self.driver.find_element_by_css_selector(Elements.addPackages).click()
+        environment.add_packages_button.click()
+        self.driver.execute_script("window.scrollBy(0, -200);")
+        self.driver.execute_script("window.scrollBy(0, 200);")
         for pip_pack in ['pandas', 'numpy', 'matplotlib']:
-            self.driver.find_element_by_css_selector(Elements.packageName).send_keys(pip_pack)
+            environment.package_name_input.send_keys(pip_pack)
             time.sleep(4)
-            self.driver.find_element_by_css_selector(Elements.addButton).click()
+            environment.add_button.click()
             time.sleep(4)
-        self.driver.find_element_by_css_selector(Elements.installPackages).click()
+        environment.install_packages_button.click()
         return self.driver
 
     def conda3_package(self):
         """ Add conda3 package """
         logging.info("Adding conda3 package")
+        environment = testutils.EnvironmentElements(driver)
         # find environment tab
-        self.driver.find_element_by_css_selector(Elements.environment).click()
+        environment.environment_tab_button.click()
         # find conda3 tab
-        self.driver.find_element_by_css_selector(Elements.conda3).click()
+        environment.conda3_tab_button.click()
         # add conda3 packages
-        self.driver.find_element_by_css_selector(Elements.addPackages).click()
-        self.driver.find_element_by_css_selector(Elements.packageName).send_keys('pyflakes')
+        environment.add_packages_button.click()
+        self.driver.execute_script("window.scrollBy(0, -200);")
+        self.driver.execute_script("window.scrollBy(0, 200);")
+        environment.package_name_input.send_keys('pyflakes')
         time.sleep(4)
-        self.driver.find_element_by_css_selector(Elements.addButton).click()
+        environment.add_button.click()
         time.sleep(4)
-        self.driver.find_element_by_css_selector(Elements.installPackages).click()
+        environment.install_packages_button.click()
         return self.driver
 
     def apt_package(self):
         """ Add apt package """
         logging.info("Adding apt packages")
+        environment = testutils.EnvironmentElements(driver)
         # find environment tab
-        self.driver.find_element_by_css_selector(Elements.environment).click()
+        environment.environment_tab_button.click()
         # find apt tab
-        self.driver.find_element_by_css_selector(Elements.apt).click()
+        environment.apt_tab_button.click()
         # add apt packages
-        self.driver.find_element_by_css_selector(Elements.addPackages).click()
-        self.driver.find_element_by_css_selector(Elements.packageName).send_keys('apache2')
+        environment.add_packages_button.click()
+        self.driver.execute_script("window.scrollBy(0, -200);")
+        self.driver.execute_script("window.scrollBy(0, 200);")
+        environment.package_name_input.send_keys('apache2')
         time.sleep(4)
-        self.driver.find_element_by_css_selector(Elements.addButton).click()
+        environment.add_button.click()
         time.sleep(4)
-        self.driver.find_element_by_css_selector(Elements.installPackages).click()
+        environment.install_packages_button.click()
         return self.driver
 
+    def custom_docker_instructions(self):
+        """ Add custom Docker instructions """
+        logging.info("Adding custom Docker instructions")
+        environment = testutils.EnvironmentElements(driver)
+        # find environment tab
+        environment.environment_tab_button.click()
+        # add custom docker instructions
+        self.driver.execute_script("window.scrollBy(0, 500);")
+        time.sleep(2)
+        environment.custom_docker_edit_button.click()
+        environment.custom_docker_text_input.send_keys(testutils.custom_docker_instructions())
+        self.driver.execute_script("window.scrollBy(0, 300);")
+        time.sleep(2)
+        environment.custom_docker_save_button.click()
+        return self.driver
 
 #test scripts
 
@@ -233,22 +221,27 @@ def all_bases(driver):
     # python 2 minimal base
     test_project.py2_min_base()
     time.sleep(15)
-    driver.find_element_by_css_selector(Elements.projectsPage).click()
+    environment = testutils.AddProjectBaseElements(driver)
+    environment.projects_page_button.click()
+    time.sleep(15)
     # python 3 minimal base
     test_project.create_project_no_base()
     test_project.py3_min_base()
     time.sleep(15)
-    driver.find_element_by_css_selector(Elements.projectsPage).click()
+    environment.projects_page_button.click()
+    time.sleep(15)
     # python 3 data science base
     test_project.create_project_no_base()
     test_project.py3_DS_base()
     time.sleep(15)
-    driver.find_element_by_css_selector(Elements.projectsPage).click()
+    environment.projects_page_button.click()
+    time.sleep(30)
     # R Tidyverse base
     test_project.create_project_no_base()
     test_project.RTidy_base()
     time.sleep(15)
-    driver.find_element_by_css_selector(Elements.projectsPage).click()
+    environment.projects_page_button.click()
+    time.sleep(5)
 
 def all_packages(driver):
     """ Install packages with apt, pip, conda3 """
@@ -270,19 +263,35 @@ def all_packages(driver):
     test_project.apt_package()
     time.sleep(60)
 
-#testtest
+def custom_docker(driver):
+    # set up
+    test_project = CreateProject(driver)
+    test_project.log_in()
+    test_project.remove_guide()
+    test_project.create_project_no_base()
+    # python 3 minimal base
+    test_project.py3_min_base()
+    time.sleep(15)
+    # custom docker instructions
+    test_project.custom_docker_instructions()
+    time.sleep(10)
 
 if __name__ == '__main__':
-    try:
-        # set driver
+    username, password = testutils.load_credentials()
+    logging.info(f"Using username {username}")
+        
+    for test_method in [all_bases, all_packages, custom_docker][::-1]:
         driver = testutils.load_chrome_driver()
-        # username and password
-        username, password = testutils.load_credentials()
-        logging.info(f"Using username {username}")
-        all_bases(driver)
-        #all_packages(driver)
-    finally:
-        # cleanly close driver
-        logging.info("Closing driver")
-        driver.close()
+        driver.set_window_size(1200, 1000)
+        try:
+            logging.info(f"Running test script: {test_method.__name__}")
+            test_method(driver)
+            logging.info(f"Concluded test script: {test_method.__name__}")
+        except Exception as e:
+            logging.error(f"{test_method.__name__} failed: {e}")
+        finally:
+            driver.close()
+            time.sleep(2)
+
+
 

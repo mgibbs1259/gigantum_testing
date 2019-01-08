@@ -26,3 +26,6 @@ def load_credentials(path: str = 'credentials.txt'):
     # return username (first line) and password (second line)
     return lines[0], lines[1]
 
+def custom_docker_instructions():
+    """ Return a custom Docker instruction"""
+    return "RUN cd /tmp && git clone https://github.com/gigantum/confhttpproxy && cd /tmp/confhttpproxy && pip install -e."
