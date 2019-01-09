@@ -152,9 +152,9 @@ class CreateProject():
         # find environment tab
         environment.environment_tab_button.click()
         # add pip packages
+        self.driver.execute_script("window.scrollBy(0, -400);")
+        self.driver.execute_script("window.scrollBy(0, 400);")
         environment.add_packages_button.click()
-        self.driver.execute_script("window.scrollBy(0, -200);")
-        self.driver.execute_script("window.scrollBy(0, 200);")
         for pip_pack in ['pandas', 'numpy', 'matplotlib']:
             environment.package_name_input.send_keys(pip_pack)
             time.sleep(4)
@@ -172,9 +172,9 @@ class CreateProject():
         # find conda3 tab
         environment.conda3_tab_button.click()
         # add conda3 packages
+        self.driver.execute_script("window.scrollBy(0, -400);")
+        self.driver.execute_script("window.scrollBy(0, 400);")
         environment.add_packages_button.click()
-        self.driver.execute_script("window.scrollBy(0, -200);")
-        self.driver.execute_script("window.scrollBy(0, 200);")
         environment.package_name_input.send_keys('pyflakes')
         time.sleep(4)
         environment.add_button.click()
@@ -191,9 +191,9 @@ class CreateProject():
         # find apt tab
         environment.apt_tab_button.click()
         # add apt packages
+        self.driver.execute_script("window.scrollBy(0, -400);")
+        self.driver.execute_script("window.scrollBy(0, 400);")
         environment.add_packages_button.click()
-        self.driver.execute_script("window.scrollBy(0, -200);")
-        self.driver.execute_script("window.scrollBy(0, 200);")
         environment.package_name_input.send_keys('apache2')
         time.sleep(4)
         environment.add_button.click()
@@ -264,12 +264,13 @@ def all_packages(driver):
     # python 3 minimal base
     test_project.py3_min_base()
     time.sleep(15)
+
     # pip packages
     test_project.pip_package()
     time.sleep(10)
     # conda3 package
     test_project.conda3_package()
-    time.sleep(90)
+    time.sleep(120)
     # apt package
     test_project.apt_package()
     time.sleep(60)
@@ -287,8 +288,8 @@ def custom_docker(driver):
     # custom docker instructions
     test_project.custom_docker_instructions()
     time.sleep(10)
-    assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status is stopped"
-    assert "Successfully tagged" in driver.find_element_by_css_selector(".Footer__message-title").text, "Expected footer says successfully tagged"
+    assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status stopped"
+    assert "Successfully tagged" in driver.find_element_by_css_selector(".Footer__message-title").text, "Expected footer to say successfully tagged"
     time.sleep(10)
 
 
@@ -328,7 +329,7 @@ if __name__ == '__main__':
     tests_collection = {}
 
     # You may edit this as need-be
-    methods_under_test = [test_example_success, test_example_failure, test_example_error, all_bases, all_packages, custom_docker]
+    methods_under_test = [all_packages, custom_docker]
 
     for test_method in methods_under_test:
         driver = testutils.load_chrome_driver()
