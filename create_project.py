@@ -151,6 +151,7 @@ class CreateProject():
         environment = testutils.EnvironmentElements(driver)
         # find environment tab
         environment.environment_tab_button.click()
+        time.sleep(3)
         # add pip packages
         self.driver.execute_script("window.scrollBy(0, -400);")
         self.driver.execute_script("window.scrollBy(0, 400);")
@@ -279,13 +280,19 @@ def all_packages(driver):
 
     # pip packages
     test_project.pip_package()
-    time.sleep(10)
+    time.sleep(30)
+    assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status stopped"
+
     # conda3 package
     test_project.conda3_package()
     time.sleep(120)
+    assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status stopped"
+
     # apt package
     test_project.apt_package()
     time.sleep(60)
+    assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status stopped"
+
 
 
 def custom_docker(driver):
