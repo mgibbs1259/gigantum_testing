@@ -219,6 +219,7 @@ class CreateProject():
 
 #test scripts
 
+
 def all_bases(driver):
     """ Create a project for each base """
     # set up
@@ -251,6 +252,7 @@ def all_bases(driver):
     environment.projects_page_button.click()
     time.sleep(5)
 
+
 def all_packages(driver):
     """ Install packages with apt, pip, conda3 """
     # set up
@@ -271,6 +273,7 @@ def all_packages(driver):
     test_project.apt_package()
     time.sleep(60)
 
+
 def custom_docker(driver):
     # set up
     test_project = CreateProject(driver)
@@ -284,6 +287,28 @@ def custom_docker(driver):
     test_project.custom_docker_instructions()
     time.sleep(10)
 
+
+def test_example_success(driver):
+    my_sum = 1 + 1
+    assert my_sum == 2, "Expected sum to be 2"
+    my_product = 3 * 4
+
+
+def test_example_failure(driver):
+    my_sum = 1 + 1
+    assert my_sum == 3, "Expected sum to be 3"
+
+
+def test_example_error(driver):
+    my_sum = 1 + 1
+    
+    # The following line will cause an exception
+    my_quotient = 3 / 0
+
+    # The following lines will never be reached
+    my_product = 4 + 5
+    
+
 if __name__ == '__main__':
     username, password = testutils.load_credentials()
     logging.info(f"Using username {username}")
@@ -296,18 +321,30 @@ if __name__ == '__main__':
     version_info = json.loads(r.text)
     logging.info(f'Gigantum version: {version_info["built_on"]} -- {version_info["revision"][:8]}')
 
-    for test_method in [all_bases, all_packages, custom_docker][::-1]:
+    tests_collection = {}
+
+    # You may edit this as need-be
+    methods_under_test = [test_example_success, test_example_failure, test_example_error, all_bases, all_packages, custom_docker]
+
+    for test_method in methods_under_test:
         driver = testutils.load_chrome_driver()
         driver.set_window_size(1200, 1000)
         try:
             logging.info(f"Running test script: {test_method.__name__}")
-            test_method(driver)
+            result = test_method(driver)
+            tests_collection[test_method.__name__] = {'status': 'Pass', 'message': None}
             logging.info(f"Concluded test script: {test_method.__name__}")
+        except AssertionError as fail_msg:
+            tests_collection[test_method.__name__] = {'status': 'Fail', 'message': fail_msg}
         except Exception as e:
+            tests_collection[test_method.__name__] = {'status': 'Error', 'message': e}
             logging.error(f"{test_method.__name__} failed: {e}")
         finally:
             driver.close()
             time.sleep(2)
 
-
+    print('-' * 80)
+    print('\nTest Report\n')
+    for test_name in tests_collection.keys():
+        print(f' {tests_collection[test_name]["status"]:6s} :: {test_name} :: {tests_collection[test_name]["message"] or "n/a"}')
 
