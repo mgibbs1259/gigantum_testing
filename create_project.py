@@ -1,11 +1,19 @@
+# Builtin imports
 import logging
 import time
+import json
 import uuid
+import sys
 
+# Library imports
 import selenium
+import requests
+
+# Local packages
 import testutils
 
 logging.basicConfig(level=logging.INFO)
+
 
 class CreateProject():
 
@@ -284,7 +292,15 @@ def custom_docker(driver):
 if __name__ == '__main__':
     username, password = testutils.load_credentials()
     logging.info(f"Using username {username}")
-        
+
+    r = requests.get('http://localhost:10000/api/ping')
+    if r.status_code != 200:
+        logging.error('Gigantum is not found at localhost:10000')
+        sys.exit(1)
+
+    version_info = json.loads(r.text)
+    logging.info(f'Gigantum version: {version_info["built_on"]} -- {version_info["revision"][:8]}')
+
     for test_method in [all_bases, all_packages, custom_docker][::-1]:
         driver = testutils.load_chrome_driver()
         driver.set_window_size(1200, 1000)
