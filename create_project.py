@@ -283,7 +283,9 @@ def custom_docker(driver):
     time.sleep(15)
     # custom docker instructions
     test_project.custom_docker_instructions()
-    driver.find_element_by_css_selector(".Footer__message-expand").click()
+    time.sleep(10)
+    assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status is stopped"
+    assert "Successfully tagged" in driver.find_element_by_css_selector(".Footer__message-title").text, "Expected footer says successfully tagged"
     time.sleep(10)
 
 if __name__ == '__main__':
