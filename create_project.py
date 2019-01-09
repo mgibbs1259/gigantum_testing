@@ -35,6 +35,11 @@ class CreateProject():
             pass
         return self.driver
 
+    def edge_build_version(self):
+        """ Get the edge build version """
+        #self.driver.get(http://localhost:10000/api/ping/)
+
+
     def remove_guide(self):
         """ Remove "Got it!", guide, and helper """
         logging.info("Getting rid of 'Got it!'")
