@@ -231,30 +231,40 @@ def all_bases(driver):
     test_project.log_in()
     test_project.remove_guide()
     test_project.create_project_no_base()
+    environment = testutils.AddProjectBaseElements(driver)
     # python 2 minimal base
     test_project.py2_min_base()
     time.sleep(15)
-    environment = testutils.AddProjectBaseElements(driver)
+    py2_status = driver.find_element_by_css_selector(".Footer__message-title").text
+    assert "Successfully tagged" in py2_status, "Project not Sucessfully tagged"
     environment.projects_page_button.click()
     time.sleep(15)
     # python 3 minimal base
     test_project.create_project_no_base()
     test_project.py3_min_base()
     time.sleep(15)
+    py3_status = driver.find_element_by_css_selector(".Footer__message-title").text
+    assert "Successfully tagged" in py3_status, "Project not Sucessfully tagged"
     environment.projects_page_button.click()
     time.sleep(15)
-    # python 3 data science base
-    test_project.create_project_no_base()
-    test_project.py3_DS_base()
-    time.sleep(15)
-    environment.projects_page_button.click()
-    time.sleep(30)
-    # R Tidyverse base
-    test_project.create_project_no_base()
-    test_project.RTidy_base()
-    time.sleep(15)
-    environment.projects_page_button.click()
-    time.sleep(5)
+    # # python 3 data science base
+    # test_project.create_project_no_base()
+    # test_project.py3_DS_base()
+    # time.sleep(15)
+    # py3_status = driver.find_element_by_css_selector(".Footer__message-title").text
+    # assert "Successfully tagged" in py3_status, "Project not Sucessfully tagged"
+    # time.sleep(15)
+    # environment.projects_page_button.click()
+    # time.sleep(30)
+    # # R Tidyverse base
+    # test_project.create_project_no_base()
+    # test_project.RTidy_base()
+    # time.sleep(15)
+    # environment.projects_page_button.click()
+    # time.sleep(5)
+    #
+    # status = driver.find_element_by_css_selector(".Footer__message-title").text
+    # assert "Successfully tagged" in status, "Project not Sucessfully tagged"
 
 def all_packages(driver):
     """ Install packages with apt, pip, conda3 """
@@ -301,7 +311,7 @@ if __name__ == '__main__':
     version_info = json.loads(r.text)
     logging.info(f'Gigantum version: {version_info["built_on"]} -- {version_info["revision"][:8]}')
 
-    for test_method in [all_bases, all_packages, custom_docker][::-1]:
+    for test_method in [all_bases][::-1]:
         driver = testutils.load_chrome_driver()
         driver.set_window_size(1200, 1000)
         try:
