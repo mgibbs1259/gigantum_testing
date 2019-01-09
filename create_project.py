@@ -322,7 +322,11 @@ if __name__ == '__main__':
     logging.info(f'Gigantum version: {version_info["built_on"]} -- {version_info["revision"][:8]}')
 
     tests_collection = {}
-    for test_method in [test_example_success, test_example_failure, test_example_error]: #[all_bases, all_packages, custom_docker][::-1]:
+
+    # You may edit this as need-be
+    methods_under_test = [test_example_success, test_example_failure, test_example_error, all_bases, all_packages, custom_docker]
+
+    for test_method in methods_under_test:
         driver = testutils.load_chrome_driver()
         driver.set_window_size(1200, 1000)
         try:
