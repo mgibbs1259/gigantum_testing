@@ -289,12 +289,14 @@ def custom_docker(driver):
 
 
 def test_example_success(driver):
-    return True
+    my_sum = 1 + 1
+    assert my_sum == 2, "Expected sum to be 2"
+    my_product = 3 * 4
 
 
 def test_example_failure(driver):
     my_sum = 1 + 1
-    assert my_sum == 3, "Addition did not match expected value"
+    assert my_sum == 3, "Expected sum to be 3"
 
 
 def test_example_error(driver):
