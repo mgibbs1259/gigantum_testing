@@ -145,11 +145,6 @@ class CreateProject():
         R_base_elts.create_project_button.click()
         return self.driver
 
-    def container_status(self):
-        """ Check whether container is building, running, or stopped """
-        #implement
-
-
     def pip_package(self):
         """ Add pip packages """
         logging.info("Adding pip packages")
@@ -220,6 +215,11 @@ class CreateProject():
         self.driver.execute_script("window.scrollBy(0, 300);")
         time.sleep(2)
         environment.custom_docker_save_button.click()
+        time.sleep(5)
+        self.driver.find_element_by_css_selector(".Footer__message_
+
+
+        time.sleep(5)
         return self.driver
 
 #test scripts
@@ -287,7 +287,6 @@ def custom_docker(driver):
     time.sleep(15)
     # custom docker instructions
     test_project.custom_docker_instructions()
-    time.sleep(10)
 
 if __name__ == '__main__':
     username, password = testutils.load_credentials()
