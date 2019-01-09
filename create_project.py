@@ -151,10 +151,11 @@ class CreateProject():
         environment = testutils.EnvironmentElements(driver)
         # find environment tab
         environment.environment_tab_button.click()
+        time.sleep(3)
         # add pip packages
+        self.driver.execute_script("window.scrollBy(0, -400);")
+        self.driver.execute_script("window.scrollBy(0, 400);")
         environment.add_packages_button.click()
-        self.driver.execute_script("window.scrollBy(0, -200);")
-        self.driver.execute_script("window.scrollBy(0, 200);")
         for pip_pack in ['pandas', 'numpy', 'matplotlib']:
             environment.package_name_input.send_keys(pip_pack)
             time.sleep(4)
@@ -173,8 +174,8 @@ class CreateProject():
         environment.conda3_tab_button.click()
         # add conda3 packages
         environment.add_packages_button.click()
-        self.driver.execute_script("window.scrollBy(0, -200);")
-        self.driver.execute_script("window.scrollBy(0, 200);")
+        self.driver.execute_script("window.scrollBy(0, -400);")
+        self.driver.execute_script("window.scrollBy(0, 400);")
         environment.package_name_input.send_keys('pyflakes')
         time.sleep(4)
         environment.add_button.click()
@@ -192,8 +193,8 @@ class CreateProject():
         environment.apt_tab_button.click()
         # add apt packages
         environment.add_packages_button.click()
-        self.driver.execute_script("window.scrollBy(0, -200);")
-        self.driver.execute_script("window.scrollBy(0, 200);")
+        self.driver.execute_script("window.scrollBy(0, -400);")
+        self.driver.execute_script("window.scrollBy(0, 400);")
         environment.package_name_input.send_keys('apache2')
         time.sleep(4)
         environment.add_button.click()
@@ -265,13 +266,18 @@ def all_packages(driver):
     time.sleep(15)
     # pip packages
     test_project.pip_package()
-    time.sleep(10)
+    time.sleep(30)
+    assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status stopped"
+
     # conda3 package
     test_project.conda3_package()
-    time.sleep(90)
+    time.sleep(120)
+    assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status stopped"
+
     # apt package
     test_project.apt_package()
     time.sleep(60)
+    assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status stopped"
 
 
 def custom_docker(driver):
