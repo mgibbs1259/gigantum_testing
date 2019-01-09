@@ -222,15 +222,15 @@ class CreateProject():
 #test scripts
 
 
-def all_bases(driver):
+def test_all_bases(driver):
     """ Create a project for each base """
     # set up
     test_project = CreateProject(driver)
     test_project.log_in()
     test_project.remove_guide()
-    test_project.create_project_no_base()
     environment = testutils.AddProjectBaseElements(driver)
     # python 2 minimal base
+    test_project.create_project_no_base()
     test_project.py2_min_base()
     time.sleep(15)
     py2_status = driver.find_element_by_css_selector(".Footer__message-title").text
@@ -267,8 +267,8 @@ def all_bases(driver):
     time.sleep(5)
 
 
-def all_packages(driver):
-    """ Install packages with apt, pip, conda3 """
+def test_pip_packages(driver):
+    """ Install packages with pip """
     # set up
     test_project = CreateProject(driver)
     test_project.log_in()
@@ -280,22 +280,23 @@ def all_packages(driver):
 
     # pip packages
     test_project.pip_package()
-    time.sleep(30)
+    while not driver.find_element_by_css_selector(".Stopped").is_displayed():
+        time.sleep(2)
     assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status stopped"
 
-    # conda3 package
+    ''''# conda3 package
     test_project.conda3_package()
-    time.sleep(120)
+    while not driver.find_element_by_css_selector(".Stopped").is_displayed():
+        time.sleep(2)
     assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status stopped"
 
     # apt package
     test_project.apt_package()
     time.sleep(60)
-    assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status stopped"
+    assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status stopped"'''
 
 
-
-def custom_docker(driver):
+def test_valid_custom_docker(driver):
     # set up
     test_project = CreateProject(driver)
     test_project.log_in()
@@ -348,11 +349,11 @@ if __name__ == '__main__':
     tests_collection = {}
 
     # You may edit this as need-be
-    methods_under_test = [all_packages, custom_docker]
+    methods_under_test = [test_pip_packages, test_valid_custom_docker, test_all_bases][:2]
 
     for test_method in methods_under_test:
         driver = testutils.load_chrome_driver()
-        driver.set_window_size(1200, 1000)
+        driver.set_window_size(1440, 1000)
         try:
             logging.info(f"Running test script: {test_method.__name__}")
             result = test_method(driver)
