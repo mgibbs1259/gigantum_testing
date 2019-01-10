@@ -7,6 +7,9 @@ import sys
 
 # Library imports
 import selenium
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import requests
 
 # Local packages
@@ -229,42 +232,37 @@ def test_all_bases(driver):
     test_project.log_in()
     test_project.remove_guide()
     environment = testutils.AddProjectBaseElements(driver)
+    wait = WebDriverWait(driver, 200)
     # python 2 minimal base
     test_project.create_project_no_base()
     test_project.py2_min_base()
-    time.sleep(15)
-    py2_status = driver.find_element_by_css_selector(".Footer__message-title").text
-    assert "Successfully tagged" in py2_status, "Project not Sucessfully tagged"
-    assert driver.find_element_by_css_selector(".ContainerStatus__container-state.Stopped")
+    # wait for base to build
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".ContainerStatus__container-state.Stopped")))
+    assert driver.find_element_by_css_selector(".ContainerStatus__container-state.Stopped"), "Expected project container to be stopped"
+    # projects page
     environment.projects_page_button.click()
-    time.sleep(15)
     # python 3 minimal base
     test_project.create_project_no_base()
     test_project.py3_min_base()
-    time.sleep(15)
-    py3_status = driver.find_element_by_css_selector(".Footer__message-title").text
-    assert "Successfully tagged" in py3_status, "Project not Sucessfully tagged"
-    assert driver.find_element_by_css_selector(".ContainerStatus__container-state.Stopped")
+    # wait for base to build
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".ContainerStatus__container-state.Stopped")))
+    assert driver.find_element_by_css_selector(".ContainerStatus__container-state.Stopped"), "Expected project container to be stopped"
+    # projects page
     environment.projects_page_button.click()
-    time.sleep(15)
     # python 3 data science base
     test_project.create_project_no_base()
     test_project.py3_DS_base()
-    time.sleep(15)
-    py3ds_status = driver.find_element_by_css_selector(".Footer__message-title").text
-    assert "Successfully tagged" in py3ds_status, "Project not Sucessfully tagged"
-    assert driver.find_element_by_css_selector(".ContainerStatus__container-state.Stopped")
+    # wait for base to build
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".ContainerStatus__container-state.Stopped")))
+    assert driver.find_element_by_css_selector(".ContainerStatus__container-state.Stopped"), "Expected project container to be stopped"
+    # projects page
     environment.projects_page_button.click()
-    time.sleep(15)
     # R Tidyverse base
     test_project.create_project_no_base()
     test_project.RTidy_base()
-    time.sleep(15)
-    py3ds_status = driver.find_element_by_css_selector(".Footer__message-title").text
-    assert "Successfully tagged" in py3ds_status, "Project not Sucessfully tagged"
-    assert driver.find_element_by_css_selector(".ContainerStatus__container-state.Stopped")
-    environment.projects_page_button.click()
-    time.sleep(5)
+    # wait for base to build
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".ContainerStatus__container-state.Stopped")))
+    assert driver.find_element_by_css_selector(".ContainerStatus__container-state.Stopped"), "Expected project container to be stopped"
 
 
 def test_pip_packages(driver):
@@ -274,20 +272,18 @@ def test_pip_packages(driver):
     test_project.log_in()
     test_project.remove_guide()
     test_project.create_project_no_base()
+    wait = WebDriverWait(driver, 200)
     # python 3 minimal base
     test_project.py3_min_base()
-    time.sleep(15)
-
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".Stopped")))
     # pip packages
     test_project.pip_package()
-    while not driver.find_element_by_css_selector(".Stopped").is_displayed():
-        time.sleep(2)
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".Stopped")))
     assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status stopped"
 
-    ''''# conda3 package
+    '''# conda3 package
     test_project.conda3_package()
-    while not driver.find_element_by_css_selector(".Stopped").is_displayed():
-        time.sleep(2)
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".Stopped")))
     assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status stopped"
 
     # apt package
@@ -302,15 +298,16 @@ def test_valid_custom_docker(driver):
     test_project.log_in()
     test_project.remove_guide()
     test_project.create_project_no_base()
+    wait = WebDriverWait(driver, 200)
     # python 3 minimal base
     test_project.py3_min_base()
-    time.sleep(15)
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".Stopped")))
     # custom docker instructions
     test_project.custom_docker_instructions()
-    time.sleep(10)
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".Stopped")))
     assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status stopped"
     assert "Successfully tagged" in driver.find_element_by_css_selector(".Footer__message-title").text, "Expected footer to say successfully tagged"
-    time.sleep(10)
+
 
 
 def test_example_success(driver):
@@ -349,7 +346,7 @@ if __name__ == '__main__':
     tests_collection = {}
 
     # You may edit this as need-be
-    methods_under_test = [test_pip_packages, test_valid_custom_docker, test_all_bases][:2]
+    methods_under_test = [test_valid_custom_docker]
 
     for test_method in methods_under_test:
         driver = testutils.load_chrome_driver()
