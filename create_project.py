@@ -18,7 +18,7 @@ import testutils
 
 
 logging.basicConfig(level=logging.INFO)
-
+#test
 
 class CreateProject():
 
@@ -327,7 +327,7 @@ def test_valid_custom_docker(driver):
     wait = WebDriverWait(driver, 200)
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     # custom docker instructions
-    test_project.custom_docker_instructions()
+    test_project.custom_docker_instructions
     # wait
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
