@@ -237,15 +237,15 @@ def test_all_bases(driver):
     test_project = CreateProject(driver)
     test_project.log_in()
     test_project.remove_guide()
-    environment = testutils.AddProjectBaseElements(driver)
-    # python 2 minimal base
     test_project.create_project_no_base()
+    # python 2 minimal base
     test_project.py2_min_base()
     # wait for base to build
     wait = WebDriverWait(driver, 200)
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
     # projects page
+    environment = testutils.AddProjectBaseElements(driver)
     environment.projects_page_button.click()
     # python 3 minimal base
     test_project.create_project_no_base()
@@ -317,9 +317,9 @@ def test_valid_custom_docker(driver):
     test_project.log_in()
     test_project.remove_guide()
     test_project.create_project_no_base()
-    wait = WebDriverWait(driver, 200)
     # python 3 minimal base
     test_project.py3_min_base()
+    wait = WebDriverWait(driver, 200)
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     # custom docker instructions
     test_project.custom_docker_instructions()
