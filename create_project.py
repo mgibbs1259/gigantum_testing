@@ -340,7 +340,7 @@ def validate_edge_build_version(self):
     test_project = CreateProject(driver)
     test_project.log_in()
     test_project.remove_guide()
-    time.sleep(3)
+    # switch to api/ping
     driver.get("http://localhost:10000/api/ping/")
     selenium_edge_build_version = json.loads(driver.find_element_by_css_selector("pre").text)
     assert selenium_edge_build_version == version_info, "selenium does not match requests edge build version"
