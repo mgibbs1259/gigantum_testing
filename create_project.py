@@ -18,7 +18,7 @@ import testutils
 
 
 logging.basicConfig(level=logging.INFO)
-#test
+
 
 class CreateProject():
 
@@ -334,6 +334,18 @@ def test_valid_custom_docker(driver):
     assert "Successfully tagged" in driver.find_element_by_css_selector(".Footer__message-title").text, "Expected 'Successfully tagged' in footer"
 
 
+def validate_edge_build_version(self):
+    """ Compare selenium and requests edge build version """
+    # set up
+    test_project = CreateProject(driver)
+    test_project.log_in()
+    test_project.remove_guide()
+    time.sleep(3)
+    driver.get("http://localhost:10000/api/ping/")
+    selenium_edge_build_version = json.loads(driver.find_element_by_css_selector("pre").text)
+    assert selenium_edge_build_version == version_info, "selenium does not match requests edge build version"
+
+
 def test_example_success(driver):
     my_sum = 1 + 1
     assert my_sum == 2, "Expected sum to be 2"
@@ -370,7 +382,7 @@ if __name__ == '__main__':
     tests_collection = {}
 
     # You may edit this as need-be
-    methods_under_test = [test_all_bases, test_pip_packages, test_valid_custom_docker]
+    methods_under_test = [validate_edge_build_version]
 
     for test_method in methods_under_test:
         driver = testutils.load_chrome_driver()
