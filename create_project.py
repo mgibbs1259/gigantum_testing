@@ -228,7 +228,7 @@ class CreateProject():
         return self.driver
 
 
-#test scripts
+# test scripts
 
 
 def test_all_bases(driver):
@@ -240,7 +240,7 @@ def test_all_bases(driver):
     test_project.create_project_no_base()
     # python 2 minimal base
     test_project.py2_min_base()
-    # wait for base to build
+    # wait
     wait = WebDriverWait(driver, 200)
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
@@ -250,7 +250,7 @@ def test_all_bases(driver):
     # python 3 minimal base
     test_project.create_project_no_base()
     test_project.py3_min_base()
-    # wait for base to build
+    # wait
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
     # projects page
@@ -258,7 +258,7 @@ def test_all_bases(driver):
     # python 3 data science base
     test_project.create_project_no_base()
     test_project.py3_DS_base()
-    # wait for base to build
+    # wait
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
     # projects page
@@ -266,7 +266,7 @@ def test_all_bases(driver):
     # R Tidyverse base
     test_project.create_project_no_base()
     test_project.RTidy_base()
-    # wait for base to build
+    # wait
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
 
@@ -280,10 +280,12 @@ def test_pip_packages(driver):
     test_project.create_project_no_base()
     # python 3 minimal base
     test_project.py3_min_base()
+    # wait
     wait = WebDriverWait(driver, 200)
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     # pip packages
     test_project.pip_package()
+    # wait
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
 
@@ -302,13 +304,15 @@ def test_pip_packages(driver):
 
     # conda3 package
     test_project.conda3_package()
-    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".Stopped")))
-    assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status stopped"
+    # wait 
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
+    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
 
     # apt package
     test_project.apt_package()
-    time.sleep(60)
-    assert driver.find_element_by_css_selector(".Stopped").text == "Stopped", "Expected container status stopped"'''
+    # wait 
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
+    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"'''
 
 
 def test_valid_custom_docker(driver):
@@ -319,13 +323,15 @@ def test_valid_custom_docker(driver):
     test_project.create_project_no_base()
     # python 3 minimal base
     test_project.py3_min_base()
+    # wait
     wait = WebDriverWait(driver, 200)
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     # custom docker instructions
     test_project.custom_docker_instructions()
+    # wait
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
-    assert "Successfully tagged" in driver.find_element_by_css_selector(".Footer__message-title").text, "Expected footer to say successfully tagged"
+    assert "Successfully tagged" in driver.find_element_by_css_selector(".Footer__message-title").text, "Expected 'Successfully tagged' in footer"
 
 
 def test_example_success(driver):
