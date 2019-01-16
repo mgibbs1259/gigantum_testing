@@ -4,13 +4,18 @@ import time
 import json
 import uuid
 import sys
+import os
 
 # Library imports
 import selenium
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import requests
 
 # Local packages
 import testutils
+
 
 logging.basicConfig(level=logging.INFO)
 
@@ -30,7 +35,6 @@ class CreateProject():
         auth0_elts = testutils.Auth0LoginElements(driver)
         auth0_elts.login_green_button.click()
         # username and password
-        time.sleep(2)
         logging.info("Putting in username and password")
         auth0_elts.username_input.click()
         auth0_elts.username_input.send_keys(username)
@@ -48,7 +52,6 @@ class CreateProject():
         logging.info("Getting rid of 'Got it!'")
         guide_elts = testutils.GuideElements(driver)
         # get rid of Got it!
-        time.sleep(2)
         guide_elts.got_it_button.click()
         logging.info("Turning off guide and helper")
         # turn off guide and helper
@@ -140,26 +143,22 @@ class CreateProject():
         R_base_elts.create_project_button.click()
         return self.driver
 
-    def container_status(self):
-        """ Check whether container is building, running, or stopped """
-        #implement
-
-
     def pip_package(self):
         """ Add pip packages """
         logging.info("Adding pip packages")
         environment = testutils.EnvironmentElements(driver)
         # find environment tab
         environment.environment_tab_button.click()
+        time.sleep(3)
         # add pip packages
+        self.driver.execute_script("window.scrollBy(0, -400);")
+        self.driver.execute_script("window.scrollBy(0, 400);")
         environment.add_packages_button.click()
-        self.driver.execute_script("window.scrollBy(0, -200);")
-        self.driver.execute_script("window.scrollBy(0, 200);")
         for pip_pack in ['pandas', 'numpy', 'matplotlib']:
             environment.package_name_input.send_keys(pip_pack)
-            time.sleep(4)
+            time.sleep(3)
             environment.add_button.click()
-            time.sleep(4)
+            time.sleep(3)
         environment.install_packages_button.click()
         return self.driver
 
@@ -169,16 +168,17 @@ class CreateProject():
         environment = testutils.EnvironmentElements(driver)
         # find environment tab
         environment.environment_tab_button.click()
+        time.sleep(3)
         # find conda3 tab
         environment.conda3_tab_button.click()
         # add conda3 packages
+        self.driver.execute_script("window.scrollBy(0, -400);")
+        self.driver.execute_script("window.scrollBy(0, 400);")
         environment.add_packages_button.click()
-        self.driver.execute_script("window.scrollBy(0, -200);")
-        self.driver.execute_script("window.scrollBy(0, 200);")
         environment.package_name_input.send_keys('pyflakes')
-        time.sleep(4)
+        time.sleep(3)
         environment.add_button.click()
-        time.sleep(4)
+        time.sleep(3)
         environment.install_packages_button.click()
         return self.driver
 
@@ -188,16 +188,17 @@ class CreateProject():
         environment = testutils.EnvironmentElements(driver)
         # find environment tab
         environment.environment_tab_button.click()
+        time.sleep(3)
         # find apt tab
         environment.apt_tab_button.click()
         # add apt packages
+        self.driver.execute_script("window.scrollBy(0, -400);")
+        self.driver.execute_script("window.scrollBy(0, 400);")
         environment.add_packages_button.click()
-        self.driver.execute_script("window.scrollBy(0, -200);")
-        self.driver.execute_script("window.scrollBy(0, 200);")
         environment.package_name_input.send_keys('apache2')
-        time.sleep(4)
+        time.sleep(3)
         environment.add_button.click()
-        time.sleep(4)
+        time.sleep(3)
         environment.install_packages_button.click()
         return self.driver
 
@@ -208,19 +209,20 @@ class CreateProject():
         # find environment tab
         environment.environment_tab_button.click()
         # add custom docker instructions
-        self.driver.execute_script("window.scrollBy(0, 500);")
-        time.sleep(2)
+        self.driver.execute_script("window.scrollBy(0, 600);")
         environment.custom_docker_edit_button.click()
+        time.sleep(2)
         environment.custom_docker_text_input.send_keys(testutils.custom_docker_instructions())
         self.driver.execute_script("window.scrollBy(0, 300);")
         time.sleep(2)
         environment.custom_docker_save_button.click()
         return self.driver
 
-#test scripts
+
+# test scripts
 
 
-def all_bases(driver):
+def test_all_bases(driver):
     """ Create a project for each base """
     # set up
     test_project = CreateProject(driver)
@@ -229,32 +231,39 @@ def all_bases(driver):
     test_project.create_project_no_base()
     # python 2 minimal base
     test_project.py2_min_base()
-    time.sleep(15)
+    # wait
+    wait = WebDriverWait(driver, 200)
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
+    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
+    # projects page
     environment = testutils.AddProjectBaseElements(driver)
     environment.projects_page_button.click()
-    time.sleep(15)
     # python 3 minimal base
     test_project.create_project_no_base()
     test_project.py3_min_base()
-    time.sleep(15)
+    # wait
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
+    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
+    # projects page
     environment.projects_page_button.click()
-    time.sleep(15)
     # python 3 data science base
     test_project.create_project_no_base()
     test_project.py3_DS_base()
-    time.sleep(15)
+    # wait
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
+    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
+    # projects page
     environment.projects_page_button.click()
-    time.sleep(30)
     # R Tidyverse base
     test_project.create_project_no_base()
     test_project.RTidy_base()
-    time.sleep(15)
-    environment.projects_page_button.click()
-    time.sleep(5)
+    # wait
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
+    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
 
 
-def all_packages(driver):
-    """ Install packages with apt, pip, conda3 """
+def test_pip_packages(driver):
+    """ Install packages with pip """
     # set up
     test_project = CreateProject(driver)
     test_project.log_in()
@@ -262,19 +271,43 @@ def all_packages(driver):
     test_project.create_project_no_base()
     # python 3 minimal base
     test_project.py3_min_base()
-    time.sleep(15)
+    # wait
+    wait = WebDriverWait(driver, 200)
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     # pip packages
     test_project.pip_package()
+    # wait
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
+    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
+
+
+    '''#check pip packages version
+    time.sleep(5)
+    driver.find_element_by_css_selector(".ContainerStatus__selected-tool").click()
+    time.sleep(30)
+    window_handles = driver.window_handles
+    driver.switch_to.window(window_handles[1])
+    print("switch success")
     time.sleep(10)
+    driver.find_element_by_css_selector("[data-category = Notebook]").click()
+    time.sleep(10)
+    driver.find_element_by_css_selector(".CodeMirror-line").click().send_keys("import pandas")
+    time.sleep(20)
+
     # conda3 package
     test_project.conda3_package()
-    time.sleep(90)
+    # wait 
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
+    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
+
     # apt package
     test_project.apt_package()
-    time.sleep(60)
+    # wait 
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
+    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"'''
 
 
-def custom_docker(driver):
+def test_valid_custom_docker(driver):
     # set up
     test_project = CreateProject(driver)
     test_project.log_in()
@@ -282,10 +315,15 @@ def custom_docker(driver):
     test_project.create_project_no_base()
     # python 3 minimal base
     test_project.py3_min_base()
-    time.sleep(15)
+    # wait
+    wait = WebDriverWait(driver, 200)
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     # custom docker instructions
     test_project.custom_docker_instructions()
-    time.sleep(10)
+    # wait
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
+    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
+    assert "Successfully tagged" in driver.find_element_by_css_selector(".Footer__message-title").text, "Expected 'Successfully tagged' in footer"
 
 
 def test_example_success(driver):
@@ -324,11 +362,11 @@ if __name__ == '__main__':
     tests_collection = {}
 
     # You may edit this as need-be
-    methods_under_test = [test_example_success, test_example_failure, test_example_error, all_bases, all_packages, custom_docker]
+    methods_under_test = [test_pip_packages, test_valid_custom_docker]
 
     for test_method in methods_under_test:
         driver = testutils.load_chrome_driver()
-        driver.set_window_size(1200, 1000)
+        driver.set_window_size(1440, 1000)
         try:
             logging.info(f"Running test script: {test_method.__name__}")
             result = test_method(driver)
