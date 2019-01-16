@@ -326,16 +326,33 @@ def test_valid_custom_docker(driver):
     assert "Successfully tagged" in driver.find_element_by_css_selector(".Footer__message-title").text, "Expected 'Successfully tagged' in footer"
 
 
-def validate_edge_build_version(self):
+def validate_edge_build_version(driver):
     """ Compare selenium and requests edge build version """
     # set up
-    test_project = CreateProject(driver)
-    test_project.log_in()
-    test_project.remove_guide()
+    CreateProject(driver)
+    #test_project.log_in()
+    #test_project.remove_guide()
     # switch to api/ping
     driver.get("http://localhost:10000/api/ping/")
     selenium_edge_build_version = json.loads(driver.find_element_by_css_selector("pre").text)
     assert selenium_edge_build_version == version_info, "selenium does not match requests edge build version"
+
+
+def drag_drop_file_local_browser(driver):
+    # set up
+    test_project = CreateProject(driver)
+    test_project.log_in()
+    test_project.remove_guide()
+    test_project.create_project_no_base()
+    # python 3 minimal base
+    test_project.py3_min_base()
+    # wait
+    wait = WebDriverWait(driver, 200)
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
+    # switch to input data tab
+    driver.find_element_by_css_selector("#inputData").click()
+    time.sleep(3)
+    # drag and drop from local to browser
 
 
 def test_example_success(driver):
@@ -374,7 +391,7 @@ if __name__ == '__main__':
     tests_collection = {}
 
     # You may edit this as need-be
-    methods_under_test = [validate_edge_build_version]
+    methods_under_test = []
 
     for test_method in methods_under_test:
         driver = testutils.load_chrome_driver()
