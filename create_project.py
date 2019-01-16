@@ -148,11 +148,8 @@ class CreateProject():
         logging.info("Adding pip packages")
         environment = testutils.EnvironmentElements(driver)
         # find environment tab
-        try:
-            environment.environment_tab_button.click()
-            time.sleep(3)
-        except:
-            pass
+        environment.environment_tab_button.click()
+        time.sleep(3)
         # add pip packages
         self.driver.execute_script("window.scrollBy(0, -400);")
         self.driver.execute_script("window.scrollBy(0, 400);")
@@ -170,11 +167,8 @@ class CreateProject():
         logging.info("Adding conda3 package")
         environment = testutils.EnvironmentElements(driver)
         # find environment tab
-        try:
-            environment.environment_tab_button.click()
-            time.sleep(3)
-        except:
-            pass
+        environment.environment_tab_button.click()
+        time.sleep(3)
         # find conda3 tab
         environment.conda3_tab_button.click()
         # add conda3 packages
@@ -193,11 +187,8 @@ class CreateProject():
         logging.info("Adding apt packages")
         environment = testutils.EnvironmentElements(driver)
         # find environment tab
-        try:
-            environment.environment_tab_button.click()
-            time.sleep(3)
-        except:
-            pass
+        environment.environment_tab_button.click()
+        time.sleep(3)
         # find apt tab
         environment.apt_tab_button.click()
         # add apt packages
@@ -289,6 +280,7 @@ def test_pip_packages(driver):
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
 
+
     '''#check pip packages version
     time.sleep(5)
     driver.find_element_by_css_selector(".ContainerStatus__selected-tool").click()
@@ -327,7 +319,7 @@ def test_valid_custom_docker(driver):
     wait = WebDriverWait(driver, 200)
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     # custom docker instructions
-    test_project.custom_docker_instructions
+    test_project.custom_docker_instructions()
     # wait
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
