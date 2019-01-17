@@ -8,6 +8,8 @@ import os
 
 # Library imports
 import selenium
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -154,7 +156,8 @@ class CreateProject():
         self.driver.execute_script("window.scrollBy(0, -400);")
         self.driver.execute_script("window.scrollBy(0, 400);")
         environment.add_packages_button.click()
-        for pip_pack in ['pandas', 'numpy', 'matplotlib']:
+        pip_list = ['pandas', 'numpy', 'matplotlib']
+        for pip_pack in pip_list:
             environment.package_name_input.send_keys(pip_pack)
             time.sleep(3)
             environment.add_button.click()
@@ -280,20 +283,42 @@ def test_pip_packages(driver):
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
 
+    # check package version from environment
+    package_info = driver.find_element_by_css_selector(".PackageDependencies__table-container").text
+    # parse the string to a list and extract information of package names and versions.
+    package_list = package_info.split("\n")[1::2]
+    package_parse = [x.split(" ") for x in package_list]
+    # convert to dictionary with package names as key and versions as values.
+    package_environment = {x[0]: x[1] for x in package_parse}
+    logging.info("Getting package versions from environment")
 
-    '''#check pip packages version
-    time.sleep(5)
+    # check pip packages version from jupyterlab
     driver.find_element_by_css_selector(".ContainerStatus__selected-tool").click()
-    time.sleep(30)
+    time.sleep(5)
     window_handles = driver.window_handles
     driver.switch_to.window(window_handles[1])
-    print("switch success")
-    time.sleep(10)
+    time.sleep(5)
     driver.find_element_by_css_selector("[data-category = Notebook]").click()
+    time.sleep(5)
+    el = driver.find_element_by_css_selector(".CodeMirror-line")
+    actions = ActionChains(driver)
+    # implement script the import packages and print the versions.
+    package_script = "import pandas\nimport numpy\nimport matplotlib\n" \
+                     "print('pandas', pandas.__version__," \
+                     " 'numpy',numpy.__version__," \
+                     " 'matplotlib', matplotlib.__version__)"
+    actions.move_to_element(el).click(el).send_keys(package_script).perform()
+    driver.find_element_by_css_selector(".jp-RunIcon").click()
+    # extract the output of package versions as string and parse to a list.
+    package_output = driver.find_element_by_css_selector(".jp-OutputArea-output").text.split(" ")
+    # convert to dictionary with package names as key and versions as values.
+    package_jupyter = dict(zip(package_output[::2], package_output[1::2]))
+    logging.info("Getting package versions from jupyterlab")
+    # check if package versions from environment and from jupyter notebook are same.
+    assert package_environment == package_jupyter, "Package versions match"
     time.sleep(10)
-    driver.find_element_by_css_selector(".CodeMirror-line").click().send_keys("import pandas")
-    time.sleep(20)
 
+    '''
     # conda3 package
     test_project.conda3_package()
     # wait 
@@ -372,7 +397,9 @@ if __name__ == '__main__':
     tests_collection = {}
 
     # You may edit this as need-be
-    methods_under_test = [validate_edge_build_version]
+        
+    #methods_under_test = [test_all_bases, test_pip_packages, test_valid_custom_docker]
+    methods_under_test = [test_pip_packages]
 
     for test_method in methods_under_test:
         driver = testutils.load_chrome_driver()
