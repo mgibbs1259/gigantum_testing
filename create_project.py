@@ -388,7 +388,7 @@ if __name__ == '__main__':
             tests_collection[test_method.__name__] = {'status': 'Error', 'message': e}
             logging.error(f"{test_method.__name__} failed: {e}")
         finally:
-            driver.close()
+            driver.quit()
             time.sleep(2)
 
     print('-' * 80)
