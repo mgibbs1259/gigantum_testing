@@ -336,7 +336,7 @@ def validate_edge_build_version(driver):
     assert selenium_edge_build_version == version_info, "selenium does not match requests edge build version"
 
 
-def drag_drop_file_local_to_browser(driver):
+def test_drag_drop_file_local_to_browser(driver):
     # set up
     test_project = CreateProject(driver)
     test_project.log_in()
@@ -386,7 +386,8 @@ def drag_drop_file_local_to_browser(driver):
                 return this.file
             },
             getAsEntry: function() {
-                return this.file
+                console.log(this, this.file, b)
+                return this.file; // {"file": this.file, "entry": { "fullpath": file.name, "file": file, "name": file.name }}
             },
             getAsString: function(b) {
                 var a = new FileReader;
@@ -478,7 +479,7 @@ if __name__ == '__main__':
             tests_collection[test_method.__name__] = {'status': 'Error', 'message': e}
             logging.error(f"{test_method.__name__} failed: {e}")
         finally:
-            driver.close()
+            #driver.close()
             time.sleep(2)
 
     print('-' * 80)
