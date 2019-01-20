@@ -1,6 +1,7 @@
 # Builtin imports
 import argparse
 import logging
+import pprint
 import time
 import json
 import uuid
@@ -52,6 +53,7 @@ def run_playbook(path):
             t0 = time.time()
             result = t()
             tfin = time.time()
+            logging.info(f'PASS -- {path}:{t.__name__} after {tfin-t0:.2f}s')
             test_collect[t.__name__] = {
                 'status': 'PASS',
                 'failure_message': None,
@@ -59,19 +61,20 @@ def run_playbook(path):
                 'exception': None
             }
         except Exception as e:
+            fail_type = 'ERROR' if type(e) != AssertionError else 'FAIL'
             tfin = time.time()
+            logging.error(f'{fail_type} -- {path}:{t.__name__} after {tfin-t0:.2f}s: {e}')
             test_collect[t.__name__] = {
-                'status': 'ERROR' if type(e) != AssertionError else 'FAIL',
+                'status': fail_type,
                 'failure_message': str(e),
                 'duration': round(tfin-t0),
                 'exception': str(type(e))
             }
         finally:
             driver.quit()
-            time.sleep(2)
+            time.sleep(1)
 
     return test_collect
-
 
 
 if __name__ == '__main__':
@@ -91,7 +94,6 @@ if __name__ == '__main__':
             failed = True
         full_results[pb] = r
 
-    import pprint
     pprint.pprint(full_results)
 
     if failed:
