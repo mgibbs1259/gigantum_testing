@@ -19,10 +19,16 @@ import requests
 # Local packages
 import testutils
 
+TEST_ROOT = os.path.join(os.getcwd(), 'gigantum_tests')
+sys.path.append(TEST_ROOT)
+
 
 def get_playbooks(path):
-    sys.path.append(os.path.join(os.getcwd(), path))
-    return [t for t in os.listdir(path)
+    # If given a specific path
+    if path and 'test_' in path:
+        return [path]
+    # Else, get all test playbooks
+    return [t for t in os.listdir(os.path.join(TEST_ROOT, path))
             if '.py' in t and 'test_' in t]
 
 
@@ -37,12 +43,12 @@ def load_test_methods(path):
 def run_playbook(path):
     test_methods = load_test_methods(path)
     test_collect = {t.__name__: None for t in test_methods}
-
-    s = f'Running Playbook {path}'
-    print(f'{s}\n{"="*len(s)}')
+   
     for t in test_methods:
+        logging.info(f'Running {path}:{t.__name__} ...')
+        driver = testutils.load_chrome_driver()
+        driver.set_window_size(1440, 1000)
         try:
-            print(f'Running test: {t.__name__}')
             t0 = time.time()
             result = t()
             tfin = time.time()
@@ -60,64 +66,36 @@ def run_playbook(path):
                 'duration': round(tfin-t0),
                 'exception': str(type(e))
             }
-    return test_collect
-
-if __name__ == '__main__':
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument('test_path', nargs='?', type=str,
-                           default='gigantum_tests')
-    argparser.add_argument('--stop-early', '-x', action='store_true')
-    args = argparser.parse_args()
-
-    playbooks = get_playbooks(args.test_path)
-
-    import pprint
-    for pb in playbooks:
-        r = run_playbook(pb)
-        pprint.pprint(r)
-
-
-sys.exit(0)
-
-logging.basicConfig(level=logging.INFO)
-if __name__ == '__main__':
-    username, password = testutils.load_credentials()
-    logging.info(f"Using username {username}")
-
-    r = requests.get('http://localhost:10000/api/ping')
-    if r.status_code != 200:
-        logging.error('Gigantum is not found at localhost:10000')
-        sys.exit(1)
-
-    version_info = json.loads(r.text)
-    logging.info(f'Gigantum version: {version_info["built_on"]} -- {version_info["revision"][:8]}')
-
-    tests_collection = {}
-
-    # You may edit this as need-be
-        
-    #methods_under_test = [test_all_bases, test_pip_packages, test_valid_custom_docker]
-    methods_under_test = [test_pip_packages]
-
-    for test_method in methods_under_test:
-        driver = testutils.load_chrome_driver()
-        driver.set_window_size(1440, 1000)
-        try:
-            logging.info(f"Running test script: {test_method.__name__}")
-            result = test_method(driver)
-            tests_collection[test_method.__name__] = {'status': 'Pass', 'message': None}
-            logging.info(f"Concluded test script: {test_method.__name__}")
-        except AssertionError as fail_msg:
-            tests_collection[test_method.__name__] = {'status': 'Fail', 'message': fail_msg}
-        except Exception as e:
-            tests_collection[test_method.__name__] = {'status': 'Error', 'message': e}
-            logging.error(f"{test_method.__name__} failed: {e}")
         finally:
             driver.quit()
             time.sleep(2)
 
-    print('-' * 80)
-    print('\nTest Report\n')
-    for test_name in tests_collection.keys():
-        print(f' {tests_collection[test_name]["status"]:6s} :: {test_name} :: {tests_collection[test_name]["message"] or "n/a"}')
+    return test_collect
+
+
+
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument('test_path', nargs='?', type=str, default="",
+                           help='Optional name of specific playbook')
+    args = argparser.parse_args()
+
+    playbooks = get_playbooks(args.test_path)
+
+    failed = False
+    full_results = {}
+    for pb in playbooks:
+        r = run_playbook(pb)
+        if any([r[l]['status'].lower() != 'pass' for l in r]):
+            failed = True
+        full_results[pb] = r
+
+    import pprint
+    pprint.pprint(full_results)
+
+    if failed:
+        sys.exit(1)
+    else:
+        sys.exit(0)
 
