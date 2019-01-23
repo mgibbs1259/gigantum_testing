@@ -404,6 +404,7 @@ if __name__ == '__main__':
     for test_method in methods_under_test:
         driver = testutils.load_chrome_driver()
         driver.set_window_size(1440, 1000)
+        wait = WebDriverWait(driver, 200)
         try:
             logging.info(f"Running test script: {test_method.__name__}")
             result = test_method(driver)
