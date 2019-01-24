@@ -386,8 +386,9 @@ def test_drag_drop_file_local_to_browser(driver):
                 return this.file
             },
             getAsEntry: function() {
-                console.log(this, this.file, b)
-                return this.file; // {"file": this.file, "entry": { "fullpath": file.name, "file": file, "name": file.name }}
+                console.log(this, b)
+                this.webkitGetAsEntry = this.webkitGetAsEntry.bind(this) 
+                return this.webkitGetAsEntry ? this.webkitGetAsEntry.call(this, this.webkitGetAsEntry) : this.getAsEntry();
             },
             getAsString: function(b) {
                 var a = new FileReader;
@@ -425,7 +426,7 @@ def drag_and_drop_file(drop_target, path, js_script):
     file_input = driver.execute_script(js_script, drop_target, 0, 0)
     file_input.send_keys(path)
 
-#drag_and_drop_file(drop_target, path)
+# drag_and_drop_file(drop_target, path)
 
 def test_example_success(driver):
     my_sum = 1 + 1
@@ -463,7 +464,7 @@ if __name__ == '__main__':
     tests_collection = {}
 
     # You may edit this as need-be
-    methods_under_test = [drag_drop_file_local_to_browser]
+    methods_under_test = [test_drag_drop_file_local_to_browser]
 
     for test_method in methods_under_test:
         driver = testutils.load_chrome_driver()
