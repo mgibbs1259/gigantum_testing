@@ -340,6 +340,7 @@ def test_drag_drop_file_local_to_browser(driver):
     # set up
     test_project = CreateProject(driver)
     test_project.log_in()
+    time.sleep(2)
     test_project.remove_guide()
     test_project.create_project_no_base()
     # python 3 minimal base
@@ -367,7 +368,7 @@ def test_drag_drop_file_local_to_browser(driver):
     var a = c.createElement('INPUT');
     a.setAttribute('type', 'file');
     a.setAttribute('style', 'position:fixed;z-index:2147483647;left:0;top:0;');
-    a.onchange = function() {
+    a.onchange = function(evt) {
         var b = {
             effectAllowed: 'all',
             dropEffect: 'none',
@@ -386,9 +387,11 @@ def test_drag_drop_file_local_to_browser(driver):
                 return this.file
             },
             getAsEntry: function() {
-                console.log(this, b)
-                this.webkitGetAsEntry = this.webkitGetAsEntry.bind(this) 
-                return this.webkitGetAsEntry ? this.webkitGetAsEntry.call(this, this.webkitGetAsEntry) : this.getAsEntry();
+                console.log(evt)
+                console.log(this, this.file, b)
+                var isDirectory = this.file.name.indexOf(".") < 0
+                var isFile = this.file.name.indexOf(".") > -1
+                return {"file": this.file, "entry": { "fullpath": this.file.name, "file": this.file, "name": this.file.name, isDirectory: isDirectory, isFile: isFile}}
             },
             getAsString: function(b) {
                 var a = new FileReader;
@@ -404,6 +407,8 @@ def test_drag_drop_file_local_to_browser(driver):
             d.initMouseEvent(a, !0, !0, c.defaultView, 0, 0, 0, g, h, !1, !1, !1, !1, 0, null);
             Object.setPrototypeOf(d, null);
             d.dataTransfer = b;
+            console.log(d)
+            
             Object.setPrototypeOf(d, DragEvent.prototype);
             f.dispatchEvent(d)
         });
@@ -416,7 +421,7 @@ def test_drag_drop_file_local_to_browser(driver):
     file_path = os.path.join(os.getcwd(), 'testmaterial/file-3000000b.rando')
     drag_and_drop_file(drop_target, file_path, js_script)
     time.sleep(3)
-    flat_dir_path = os.path.join(os.getcwd(), 'testmaterial/flatdir')
+    flat_dir_path = os.path.join(os.getcwd(), 'testmaterial/flatdir/1-file-21000.rando')
     drag_and_drop_file(drop_target, flat_dir_path, js_script)
     time.sleep(60)
 
