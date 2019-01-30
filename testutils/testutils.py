@@ -2,9 +2,15 @@ import os
 import uuid
 
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 def load_chrome_driver():
     return webdriver.Chrome()
+
+def load_chrome_driver_headless():
+    options = Options()
+    options.add_argument("--headless")
+    return webdriver.Chrome(options=options)
 
 def load_firefox_driver():
     return webdriver.Firefox()

@@ -52,6 +52,7 @@ class CreateProject():
     def remove_guide(self):
         """ Remove "Got it!", guide, and helper """
         logging.info("Getting rid of 'Got it!'")
+        time.sleep(3)
         guide_elts = testutils.GuideElements(driver)
         # get rid of Got it!
         guide_elts.got_it_button.click()
@@ -294,7 +295,7 @@ def test_pip_packages(driver):
 
     # check pip packages version from jupyterlab
     driver.find_element_by_css_selector(".ContainerStatus__selected-tool").click()
-    time.sleep(5)
+    time.sleep(10)
     window_handles = driver.window_handles
     driver.switch_to.window(window_handles[1])
     time.sleep(5)
@@ -315,7 +316,7 @@ def test_pip_packages(driver):
     package_jupyter = dict(zip(package_output[::2], package_output[1::2]))
     logging.info("Getting package versions from jupyterlab")
     # check if package versions from environment and from jupyter notebook are same.
-    assert package_environment == package_jupyter, "Package versions match"
+    assert package_environment == package_jupyter, "Package versions need to match"
     time.sleep(10)
 
     '''
@@ -403,6 +404,8 @@ if __name__ == '__main__':
 
     for test_method in methods_under_test:
         driver = testutils.load_chrome_driver()
+        # Run the test in headless mode
+        #driver = testutils.load_chrome_driver_headless()
         driver.set_window_size(1440, 1000)
         try:
             logging.info(f"Running test script: {test_method.__name__}")
