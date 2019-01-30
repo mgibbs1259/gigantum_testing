@@ -238,7 +238,7 @@ def test_all_bases(driver):
     # wait
     wait = WebDriverWait(driver, 200)
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
+    assert testutils.is_container_stopped(driver), "Expected stopped container"
     # projects page
     environment = testutils.AddProjectBaseElements(driver)
     environment.projects_page_button.click()
@@ -247,7 +247,7 @@ def test_all_bases(driver):
     test_project.py3_min_base()
     # wait
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
+    assert testutils.is_container_stopped(driver), "Expected stopped container"
     # projects page
     environment.projects_page_button.click()
     # python 3 data science base
@@ -255,7 +255,7 @@ def test_all_bases(driver):
     test_project.py3_DS_base()
     # wait
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
+    assert testutils.is_container_stopped(driver), "Expected stopped container"
     # projects page
     environment.projects_page_button.click()
     # R Tidyverse base
@@ -263,7 +263,7 @@ def test_all_bases(driver):
     test_project.RTidy_base()
     # wait
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
+    assert testutils.is_container_stopped(driver), "Expected stopped container"
 
 
 def test_pip_packages(driver):
@@ -282,7 +282,7 @@ def test_pip_packages(driver):
     test_project.pip_package()
     # wait
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
+    assert testutils.is_container_stopped(driver), "Expected stopped container"
 
     # check package version from environment
     package_info = driver.find_element_by_css_selector(".PackageDependencies__table-container").text
@@ -318,6 +318,13 @@ def test_pip_packages(driver):
     # check if package versions from environment and from jupyter notebook are same.
     assert package_environment == package_jupyter, "Package versions need to match"
     time.sleep(10)
+    # stop the container after the test is finished
+    driver.switch_to.window(window_handles[0])
+    time.sleep(3)
+    testutils.stop_container(driver)
+    assert testutils.is_container_stopped(driver), "Expected stopped container"
+
+
 
     '''
     # conda3 package

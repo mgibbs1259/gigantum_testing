@@ -36,3 +36,10 @@ def custom_docker_instructions():
     """ Return a custom Docker instruction"""
     return "RUN cd /tmp && git clone https://github.com/gigantum/confhttpproxy && cd /tmp/confhttpproxy && pip install -e."
 
+def is_container_stopped(driver):
+    """ Check if the container is stopped """
+    return driver.find_element_by_css_selector(".flex>.Stopped").is_displayed()
+
+def stop_container(driver):
+    """ Stop container after test is finished """
+    return driver.find_element_by_css_selector(".flex>.Running").click()
