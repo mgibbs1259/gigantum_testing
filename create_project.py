@@ -52,6 +52,7 @@ class CreateProject():
     def remove_guide(self):
         """ Remove "Got it!", guide, and helper """
         logging.info("Getting rid of 'Got it!'")
+        time.sleep(3)
         guide_elts = testutils.GuideElements(driver)
         # get rid of Got it!
         guide_elts.got_it_button.click()
@@ -237,7 +238,7 @@ def test_all_bases(driver):
     # wait
     wait = WebDriverWait(driver, 200)
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
+    assert testutils.is_container_stopped(driver), "Expected stopped container"
     # projects page
     environment = testutils.AddProjectBaseElements(driver)
     environment.projects_page_button.click()
@@ -246,7 +247,7 @@ def test_all_bases(driver):
     test_project.py3_min_base()
     # wait
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
+    assert testutils.is_container_stopped(driver), "Expected stopped container"
     # projects page
     environment.projects_page_button.click()
     # python 3 data science base
@@ -254,7 +255,7 @@ def test_all_bases(driver):
     test_project.py3_DS_base()
     # wait
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
+    assert testutils.is_container_stopped(driver), "Expected stopped container"
     # projects page
     environment.projects_page_button.click()
     # R Tidyverse base
@@ -262,7 +263,7 @@ def test_all_bases(driver):
     test_project.RTidy_base()
     # wait
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
+    assert testutils.is_container_stopped(driver), "Expected stopped container"
 
 
 def test_pip_packages(driver):
@@ -281,7 +282,7 @@ def test_pip_packages(driver):
     test_project.pip_package()
     # wait
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
+    assert testutils.is_container_stopped(driver), "Expected stopped container"
 
     # check package version from environment
     package_info = driver.find_element_by_css_selector(".PackageDependencies__table-container").text
@@ -294,7 +295,7 @@ def test_pip_packages(driver):
 
     # check pip packages version from jupyterlab
     driver.find_element_by_css_selector(".ContainerStatus__selected-tool").click()
-    time.sleep(5)
+    time.sleep(10)
     window_handles = driver.window_handles
     driver.switch_to.window(window_handles[1])
     time.sleep(5)
@@ -315,8 +316,15 @@ def test_pip_packages(driver):
     package_jupyter = dict(zip(package_output[::2], package_output[1::2]))
     logging.info("Getting package versions from jupyterlab")
     # check if package versions from environment and from jupyter notebook are same.
-    assert package_environment == package_jupyter, "Package versions match"
+    assert package_environment == package_jupyter, "Package versions need to match"
     time.sleep(10)
+    # stop the container after the test is finished
+    driver.switch_to.window(window_handles[0])
+    time.sleep(3)
+    testutils.stop_container(driver)
+    assert testutils.is_container_stopped(driver), "Expected stopped container"
+
+
 
     '''
     # conda3 package
@@ -361,4 +369,45 @@ def validate_edge_build_version(self):
     assert selenium_edge_build_version == version_info, "selenium does not match requests edge build version"
 
     
+if __name__ == '__main__':
+    username, password = testutils.load_credentials()
+    logging.info(f"Using username {username}")
 
+    r = requests.get('http://localhost:10000/api/ping')
+    if r.status_code != 200:
+        logging.error('Gigantum is not found at localhost:10000')
+        sys.exit(1)
+
+    version_info = json.loads(r.text)
+    logging.info(f'Gigantum version: {version_info["built_on"]} -- {version_info["revision"][:8]}')
+
+    tests_collection = {}
+
+    # You may edit this as need-be
+        
+    #methods_under_test = [test_all_bases, test_pip_packages, test_valid_custom_docker]
+    methods_under_test = [test_pip_packages]
+
+    for test_method in methods_under_test:
+        driver = testutils.load_chrome_driver()
+        # Run the test in headless mode
+        #driver = testutils.load_chrome_driver_headless()
+        driver.set_window_size(1440, 1000)
+        try:
+            logging.info(f"Running test script: {test_method.__name__}")
+            result = test_method(driver)
+            tests_collection[test_method.__name__] = {'status': 'Pass', 'message': None}
+            logging.info(f"Concluded test script: {test_method.__name__}")
+        except AssertionError as fail_msg:
+            tests_collection[test_method.__name__] = {'status': 'Fail', 'message': fail_msg}
+        except Exception as e:
+            tests_collection[test_method.__name__] = {'status': 'Error', 'message': e}
+            logging.error(f"{test_method.__name__} failed: {e}")
+        finally:
+            driver.quit()
+            time.sleep(2)
+
+    print('-' * 80)
+    print('\nTest Report\n')
+    for test_name in tests_collection.keys():
+        print(f' {tests_collection[test_name]["status"]:6s} :: {test_name} :: {tests_collection[test_name]["message"] or "n/a"}')
