@@ -50,7 +50,7 @@ def test_pip_packages(driver: selenium.webdriver):
 
     # check pip packages version from jupyterlab
     driver.find_element_by_css_selector(".ContainerStatus__selected-tool").click()
-    time.sleep(5)
+    time.sleep(10)
     window_handles = driver.window_handles
     driver.switch_to.window(window_handles[1])
     time.sleep(5)
