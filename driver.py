@@ -1,21 +1,9 @@
 # Builtin imports
 import argparse
 import logging
-import pprint
 import time
-import json
-import uuid
 import sys
 import os
-
-# Library imports
-import selenium
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import requests
 
 # Local packages
 import testutils
