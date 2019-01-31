@@ -39,7 +39,7 @@ def test_pip_packages(driver: selenium.webdriver):
     assert testutils.is_container_stopped(driver), "Expected stopped container"
 
 
-    # check package version from environment
+    # check package versions from environment
     package_info = driver.find_element_by_css_selector(".PackageDependencies__table-container").text
     # parse the string to a list and extract information of package names and versions
     package_list = package_info.split("\n")[1::2]
@@ -50,12 +50,12 @@ def test_pip_packages(driver: selenium.webdriver):
 
     # check pip packages version from jupyterlab
     driver.find_element_by_css_selector(".ContainerStatus__selected-tool").click()
-    time.sleep(5)
+    time.sleep(10)
     window_handles = driver.window_handles
     driver.switch_to.window(window_handles[1])
-    time.sleep(5)
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "[title = code]")))
     driver.find_element_by_css_selector("[data-category = Notebook]").click()
-    time.sleep(5)
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".CodeMirror-line")))
     el = driver.find_element_by_css_selector(".CodeMirror-line")
     actions = ActionChains(driver)
     # implement script the import packages and print the versions.
@@ -65,21 +65,19 @@ def test_pip_packages(driver: selenium.webdriver):
                      " 'matplotlib', matplotlib.__version__)"
     actions.move_to_element(el).click(el).send_keys(package_script).perform()
     driver.find_element_by_css_selector(".jp-RunIcon").click()
-    time.sleep(5)
     # extract the output of package versions as string and parse to a list.
-    time.sleep(2)
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".jp-OutputArea-output>pre")))
     package_output = driver.find_element_by_css_selector(".jp-OutputArea-output>pre").text.split(" ")
     # convert to dictionary with package names as key and versions as values.
     package_jupyter = dict(zip(package_output[::2], package_output[1::2]))
     logging.info("Getting package versions from jupyterlab")
     # check if package versions from environment and from jupyter notebook are same.
     assert package_environment == package_jupyter, "Package versions match"
-    time.sleep(10)
     # stop the container after the test is finished
     driver.switch_to.window(window_handles[0])
-    time.sleep(5)
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Running")))
     testutils.stop_container(driver)
-    time.sleep(5)
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     assert testutils.is_container_stopped(driver), "Expected stopped container"
 
 
