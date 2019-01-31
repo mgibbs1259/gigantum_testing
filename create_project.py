@@ -246,28 +246,7 @@ def test_valid_custom_docker(driver: selenium.webdriver):
 
 
 
-
-def test_example_success(driver):
-    my_sum = 1 + 1
-    assert my_sum == 2, "Expected sum to be 2"
-    my_product = 3 * 4
-
-
-def test_example_failure(driver):
-    my_sum = 1 + 1
-    assert my_sum == 3, "Expected sum to be 3"
-
-
-def test_example_error(driver):
-    my_sum = 1 + 1
     
-    # The following line will cause an exception
-    my_quotient = 3 / 0
-
-    # The following lines will never be reached
-    my_product = 4 + 5
-    
-
 if __name__ == '__main__':
     username, password = testutils.load_credentials()
     logging.info(f"Using username {username}")
