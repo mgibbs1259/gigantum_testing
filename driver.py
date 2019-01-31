@@ -48,6 +48,7 @@ def run_playbook(path):
     for t in test_methods:
         logging.info(f'Running {path}:{t.__name__} ...')
         driver = testutils.load_chrome_driver()
+        driver.implicitly_wait(5)
         driver.set_window_size(1440, 1000)
         try:
             t0 = time.time()
