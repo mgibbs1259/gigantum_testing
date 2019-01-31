@@ -12,7 +12,7 @@ from selenium.webdriver.common.by import By
 logging.basicConfig(level=logging.INFO)
 
 
-def test_edge_build_versions(driver: selenium.webdriver):
+def test_edge_build_versions(driver: selenium.webdriver, *args, **kwargs):
     """
     Test that the requests edge build version matches the selenium edge build version.
 

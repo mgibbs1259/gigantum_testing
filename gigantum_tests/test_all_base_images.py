@@ -13,7 +13,7 @@ import testutils
 
 logging.basicConfig(level=logging.INFO)
 
-def test_py2_min_base(driver):
+def test_py2_min_base(driver: selenium.webdriver, *args, **kwargs):
     """
     Test the creation of a project with a python 2 minimal base.
 
@@ -36,7 +36,7 @@ def test_py2_min_base(driver):
     assert container_elts.container_status_stop.is_displayed(), "Expected stopped container"
 
 
-def test_py3_min_base(driver: selenium.webdriver):
+def test_py3_min_base(driver: selenium.webdriver, *args, **kwargs):
     """
     Test the creation a project with a python 3 minimal base.
 
@@ -59,7 +59,7 @@ def test_py3_min_base(driver: selenium.webdriver):
     assert container_elts.container_status_stop.is_displayed(), "Expected stopped container"
 
 
-def test_py3_ds_base(driver: selenium.webdriver):
+def test_py3_ds_base(driver: selenium.webdriver, *args, **kwargs):
     """
     Test the creation of a project with a python 3 data science base.
 
@@ -82,7 +82,7 @@ def test_py3_ds_base(driver: selenium.webdriver):
     assert container_elts.container_status_stop.is_displayed(), "Expected stopped container"
 
 
-def test_rtidy_base(driver: selenium.webdriver):
+def test_rtidy_base(driver: selenium.webdriver, *args, **kwargs):
     """
     Test the creation of a project with a R Tidyverse base.
 

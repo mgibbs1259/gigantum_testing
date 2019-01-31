@@ -13,7 +13,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import testutils
 
 
-def test_pip_packages(driver: selenium.webdriver):
+def test_pip_packages(driver: selenium.webdriver, *args, **kwargs):
     """
     Test that pip packages install successfully.
 
@@ -98,7 +98,7 @@ def test_pip_packages(driver: selenium.webdriver):
     assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"'''
 
 
-def test_valid_custom_docker(driver: selenium.webdriver):
+def test_valid_custom_docker(driver: selenium.webdriver, *args, **kwargs):
     """
     Test valid custom Docker instructions.
 
