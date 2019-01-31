@@ -66,7 +66,7 @@ def test_pip_packages(driver: selenium.webdriver, *args, **kwargs):
     actions.move_to_element(el).click(el).send_keys(package_script).perform()
     driver.find_element_by_css_selector(".jp-RunIcon").click()
     # extract the output of package versions as string and parse to a list.
-    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".jp-OutputArea-output>pre")))
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".jp-mod-active")))
     package_output = driver.find_element_by_css_selector(".jp-OutputArea-output>pre").text.split(" ")
     # convert to dictionary with package names as key and versions as values.
     package_jupyter = dict(zip(package_output[::2], package_output[1::2]))
