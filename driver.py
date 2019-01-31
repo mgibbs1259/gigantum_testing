@@ -52,7 +52,7 @@ def run_playbook(path):
         driver.set_window_size(1440, 1000)
         try:
             t0 = time.time()
-            result = t()
+            t(driver)
             tfin = time.time()
             logging.info(f'PASS -- {path}:{t.__name__} after {tfin-t0:.2f}s')
             test_collect[t.__name__] = {
