@@ -94,7 +94,11 @@ if __name__ == '__main__':
             failed = True
         full_results[pb] = r
 
-    pprint.pprint(full_results)
+    print(f'\n\nTEST SUMMARY ({len(full_results)} tests)\n')
+    for test_file in full_results.keys():
+        for test_method in full_results[test_file].keys():
+            d = full_results[test_file][test_method]
+            print(f"{d['status'].upper():6s} :: {test_file}@{test_method} ({d['duration']:.2f} sec) : {d['failure_message'] or ''}")
 
     if failed:
         sys.exit(1)
