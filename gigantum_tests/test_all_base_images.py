@@ -13,7 +13,7 @@ import testutils
 
 logging.basicConfig(level=logging.INFO)
 
-def test_py2_min_base(driver: selenium.webdriver):
+def test_py2_min_base(driver):
     """
     Test the creation of a project with a python 2 minimal base.
 
