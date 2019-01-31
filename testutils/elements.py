@@ -1,7 +1,9 @@
 
+
 class UiElement(object):
     def __init__(self, driver):
         self.driver = driver
+
 
 class Auth0LoginElements(UiElement):
     @property
@@ -20,6 +22,7 @@ class Auth0LoginElements(UiElement):
     def login_grey_button(self):
         return self.driver.find_element_by_css_selector(".auth0-lock-submit")
 
+
 class GuideElements(UiElement):
     @property
     def got_it_button(self):
@@ -32,6 +35,7 @@ class GuideElements(UiElement):
     @property
     def helper_button(self):
         return self.driver.find_element_by_css_selector(".Helper__button--side-view")
+
 
 class AddProjectElements(UiElement):
     @property
@@ -49,6 +53,7 @@ class AddProjectElements(UiElement):
     @property
     def project_continue_button(self):
         return self.driver.find_element_by_xpath("//button[contains(text(), 'Continue')]")
+
 
 class AddProjectBaseElements(UiElement):
     @property
@@ -84,12 +89,14 @@ class AddProjectBaseElements(UiElement):
         return self.driver.find_element_by_xpath("//h6[contains(text(), 'Python3 Data Science Quick-Start')]")
 
     @property
-    def R_tab_button(self):
+    def r_tab_button(self):
         return self.driver.find_element_by_xpath("//li[contains(text(), 'R')]")
 
     @property
-    def R_tidyverse_base_button(self):
-        return self.driver.find_element_by_xpath("//h6[contains(text(), 'R Tidyverse (+ Python3) in Jupyter Quickstart')]")
+    def r_tidyverse_base_button(self):
+        return self.driver.find_element_by_xpath(
+            "//h6[contains(text(), 'R Tidyverse (+ Python3) in Jupyter Quickstart')]")
+
 
 class EnvironmentElements(UiElement):
     @property
@@ -141,6 +148,8 @@ class EnvironmentElements(UiElement):
         return self.driver.find_element_by_css_selector(".CustomDockerfile__content-save-button")
 
 
-
-
+class ContainerStatus(UiElement):
+    @property
+    def container_status_stop(self):
+        return self.driver.find_element_by_css_selector(".flex>.Stopped")
 

@@ -8,11 +8,10 @@ import os
 
 # Library imports
 import selenium
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 import requests
 
 # Local packages
@@ -22,280 +21,156 @@ import testutils
 logging.basicConfig(level=logging.INFO)
 
 
-class CreateProject():
+def test_edge_build_versions(driver: selenium.webdriver):
+    """
+    Test that the requests edge build version matches the selenium edge build version.
 
-    def __init__(self, driver):
-        self.driver = driver
-
-    def log_in(self):
-        """ Log into Gigantum """
-        logging.info("Logging in")
-        # set up browserq
-        self.driver.get("http://localhost:10000/projects/local#")
-        self.driver.implicitly_wait(15)
-        # log in button
-        auth0_elts = testutils.Auth0LoginElements(driver)
-        auth0_elts.login_green_button.click()
-        # username and password
-        logging.info("Putting in username and password")
-        auth0_elts.username_input.click()
-        auth0_elts.username_input.send_keys(username)
-        auth0_elts.password_input.click()
-        auth0_elts.password_input.send_keys(password)
-        # log in with credentials
-        try:
-            auth0_elts.login_grey_button.click()
-        except:
-            pass
-        return self.driver
-
-    def remove_guide(self):
-        """ Remove "Got it!", guide, and helper """
-        logging.info("Getting rid of 'Got it!'")
-        time.sleep(3)
-        guide_elts = testutils.GuideElements(driver)
-        # get rid of Got it!
-        guide_elts.got_it_button.click()
-        logging.info("Turning off guide and helper")
-        # turn off guide and helper
-        guide_elts.guide_button.click()
-        guide_elts.helper_button.click()
-        return self.driver
-
-    def create_project_no_base(self):
-        """ Create a project without a base """
-        logging.info("Creating new project")
-        proj_elts = testutils.AddProjectElements(driver)
-        # create new project
-        proj_elts.create_new_button.click()
-        # create project title
-        proj_elts.project_title_input.click()
-        proj_elts.project_title_input.send_keys(testutils.unique_project_name())
-        # create project description
-        proj_elts.project_description_input.click()
-        proj_elts.project_description_input.send_keys(testutils.unique_project_description())
-        # continue creating project
-        proj_elts.project_continue_button.click()
-        return self.driver
-
-    def py2_min_base(self):
-        """ Add a Python2 Minimal base """
-        logging.info("Creating new project with Python2 Minimal base")
-        py2_base_elts = testutils.AddProjectBaseElements(driver)
-        # find python2 tab
-        try:
-            py2_base_elts.py2_tab_button.click()
-        except:
-            pass
-        # select python2 minimal base
-        while not py2_base_elts.py2_minimal_base_button.is_displayed():
-            logging.info("Searching for Python2 Minimal base...")
-            py2_base_elts.arrow_button.click()
-        py2_base_elts.py2_minimal_base_button.click()
-        py2_base_elts.create_project_button.click()
-        return self.driver
-
-    def py3_min_base(self):
-        """ Add a Python3 Minimal base """
-        logging.info("Creating new project with Python3 Minimal base")
-        py3_base_elts = testutils.AddProjectBaseElements(driver)
-        # find python3 tab
-        try:
-            py3_base_elts.py3_tab_button.click()
-        except:
-            pass
-        # select python3 minimal base
-        while not py3_base_elts.py3_minimal_base_button.is_displayed():
-            logging.info("Searching for Python3 Minimal base...")
-            py3_base_elts.arrow_button.click()
-        py3_base_elts.py3_minimal_base_button.click()
-        py3_base_elts.create_project_button.click()
-        return self.driver
-
-    def py3_DS_base(self):
-        """ Add a Python3 Data Science Quick-start base """
-        logging.info("Creating new project with Python3 Data Science Quick-start base")
-        py3_base_elts = testutils.AddProjectBaseElements(driver)
-        # find python3 tab
-        try:
-            py3_base_elts.py3_tab_button.click()
-        except:
-            pass
-        # select python3 data science base
-        while not py3_base_elts.py3_minimal_base_button.is_displayed():
-            logging.info("Searching for Python3 Data Science Quick-start base...")
-            py3_base_elts.arrow_button.click()
-        py3_base_elts.py3_data_science_base_button.click()
-        py3_base_elts.create_project_button.click()
-        return self.driver
-
-    def RTidy_base(self):
-        """ Add a R Tidyverse base """
-        logging.info("Creating new project with R Tidyverse base")
-        R_base_elts = testutils.AddProjectBaseElements(driver)
-        # find R tab
-        try:
-            R_base_elts.R_tab_button.click()
-        except:
-            pass
-        # select R Tidyverse base
-        while not R_base_elts.R_tidyverse_base_button.is_displayed():
-            logging.info("Searching for R Tidyverse base...")
-            R_base_elts.arrow_button.click()
-        R_base_elts.R_tidyverse_base_button.click()
-        R_base_elts.create_project_button.click()
-        return self.driver
-
-    def pip_package(self):
-        """ Add pip packages """
-        logging.info("Adding pip packages")
-        environment = testutils.EnvironmentElements(driver)
-        # find environment tab
-        environment.environment_tab_button.click()
-        time.sleep(3)
-        # add pip packages
-        self.driver.execute_script("window.scrollBy(0, -400);")
-        self.driver.execute_script("window.scrollBy(0, 400);")
-        environment.add_packages_button.click()
-        pip_list = ['pandas', 'numpy', 'matplotlib']
-        for pip_pack in pip_list:
-            environment.package_name_input.send_keys(pip_pack)
-            time.sleep(3)
-            environment.add_button.click()
-            time.sleep(3)
-        environment.install_packages_button.click()
-        return self.driver
-
-    def conda3_package(self):
-        """ Add conda3 package """
-        logging.info("Adding conda3 package")
-        environment = testutils.EnvironmentElements(driver)
-        # find environment tab
-        environment.environment_tab_button.click()
-        time.sleep(3)
-        # find conda3 tab
-        environment.conda3_tab_button.click()
-        # add conda3 packages
-        self.driver.execute_script("window.scrollBy(0, -400);")
-        self.driver.execute_script("window.scrollBy(0, 400);")
-        environment.add_packages_button.click()
-        environment.package_name_input.send_keys('pyflakes')
-        time.sleep(3)
-        environment.add_button.click()
-        time.sleep(3)
-        environment.install_packages_button.click()
-        return self.driver
-
-    def apt_package(self):
-        """ Add apt package """
-        logging.info("Adding apt packages")
-        environment = testutils.EnvironmentElements(driver)
-        # find environment tab
-        environment.environment_tab_button.click()
-        time.sleep(3)
-        # find apt tab
-        environment.apt_tab_button.click()
-        # add apt packages
-        self.driver.execute_script("window.scrollBy(0, -400);")
-        self.driver.execute_script("window.scrollBy(0, 400);")
-        environment.add_packages_button.click()
-        environment.package_name_input.send_keys('apache2')
-        time.sleep(3)
-        environment.add_button.click()
-        time.sleep(3)
-        environment.install_packages_button.click()
-        return self.driver
-
-    def custom_docker_instructions(self):
-        """ Add custom Docker instructions """
-        logging.info("Adding custom Docker instructions")
-        environment = testutils.EnvironmentElements(driver)
-        # find environment tab
-        environment.environment_tab_button.click()
-        # add custom docker instructions
-        self.driver.execute_script("window.scrollBy(0, 600);")
-        environment.custom_docker_edit_button.click()
-        time.sleep(2)
-        environment.custom_docker_text_input.send_keys(testutils.custom_docker_instructions())
-        self.driver.execute_script("window.scrollBy(0, 300);")
-        time.sleep(2)
-        environment.custom_docker_save_button.click()
-        return self.driver
+    Args:
+        driver
+    """
+    # get requests edge build version
+    r = requests.get("http://localhost:10000/api/ping")
+    if r.status_code != 200:
+        logging.error("Gigantum is not found at localhost:10000")
+        sys.exit(1)
+    requests_edge_build_version = json.loads(r.text)
+    # get selenium edge build version
+    driver.get("http://localhost:10000/api/ping/")
+    selenium_edge_build_version = json.loads(driver.find_element_by_css_selector("pre").text)
+    # assert edge build versions match
+    assert requests_edge_build_version == selenium_edge_build_version, "requests edge build version does not match selenium edge build version"
 
 
-# test scripts
+def test_py2_min_base(driver: selenium.webdriver):
+    """
+    Test the creation of a project with a python 2 minimal base.
 
-
-def test_all_bases(driver):
-    """ Create a project for each base """
-    # set up
-    test_project = CreateProject(driver)
-    test_project.log_in()
-    test_project.remove_guide()
-    test_project.create_project_no_base()
+    Args:
+        driver
+    """
+    # project set up
+    testutils.log_in(driver)
+    time.sleep(2)
+    testutils.remove_guide(driver)
+    testutils.create_project_without_base(driver)
+    time.sleep(2)
     # python 2 minimal base
-    test_project.py2_min_base()
-    # wait
-    wait = WebDriverWait(driver, 200)
+    testutils.add_py2_min_base(driver)
+    # wait until container status is stopped
+    wait = selenium.webdriver.support.ui.WebDriverWait(driver, 200)
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    assert testutils.is_container_stopped(driver), "Expected stopped container"
-    # projects page
-    environment = testutils.AddProjectBaseElements(driver)
-    environment.projects_page_button.click()
+    # assert container status is stopped
+    container_elts = testutils.ContainerStatus(driver)
+    assert container_elts.container_status_stop.is_displayed(), "Expected stopped container"
+
+
+def test_py3_min_base(driver: selenium.webdriver):
+    """
+    Test the creation a project with a python 3 minimal base.
+
+    Args:
+        driver
+    """
+    # project set up
+    testutils.log_in(driver)
+    time.sleep(2)
+    testutils.remove_guide(driver)
+    testutils.create_project_without_base(driver)
+    time.sleep(2)
     # python 3 minimal base
-    test_project.create_project_no_base()
-    test_project.py3_min_base()
-    # wait
+    testutils.add_py3_min_base(driver)
+    # wait until container status is stopped
+    wait = selenium.webdriver.support.ui.WebDriverWait(driver, 200)
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    assert testutils.is_container_stopped(driver), "Expected stopped container"
-    # projects page
-    environment.projects_page_button.click()
+    # assert container status is stopped
+    container_elts = testutils.ContainerStatus(driver)
+    assert container_elts.container_status_stop.is_displayed(), "Expected stopped container"
+
+
+def test_py3_ds_base(driver: selenium.webdriver):
+    """
+    Test the creation of a project with a python 3 data science base.
+
+    Args:
+        driver
+    """
+    # project set up
+    testutils.log_in(driver)
+    time.sleep(2)
+    testutils.remove_guide(driver)
+    testutils.create_project_without_base(driver)
+    time.sleep(2)
     # python 3 data science base
-    test_project.create_project_no_base()
-    test_project.py3_DS_base()
-    # wait
+    testutils.add_py3_ds_base(driver)
+    # wait until container status is stopped
+    wait = selenium.webdriver.support.ui.WebDriverWait(driver, 200)
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    assert testutils.is_container_stopped(driver), "Expected stopped container"
-    # projects page
-    environment.projects_page_button.click()
-    # R Tidyverse base
-    test_project.create_project_no_base()
-    test_project.RTidy_base()
-    # wait
-    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    assert testutils.is_container_stopped(driver), "Expected stopped container"
+    # assert container status is stopped
+    container_elts = testutils.ContainerStatus(driver)
+    assert container_elts.container_status_stop.is_displayed(), "Expected stopped container"
 
 
-def test_pip_packages(driver):
-    """ Install packages with pip """
-    # set up
-    test_project = CreateProject(driver)
-    test_project.log_in()
-    test_project.remove_guide()
-    test_project.create_project_no_base()
+def test_rtidy_base(driver: selenium.webdriver):
+    """
+    Test the creation of a project with a R Tidyverse base.
+
+    Args:
+        driver
+    """
+    # project set up
+    testutils.log_in(driver)
+    time.sleep(2)
+    testutils.remove_guide(driver)
+    testutils.create_project_without_base(driver)
+    time.sleep(2)
+    # R tidyverse base
+    testutils.add_rtidy_base(driver)
+    # wait until container status is stopped
+    wait = selenium.webdriver.support.ui.WebDriverWait(driver, 200)
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
+    # assert container status is stopped
+    container_elts = testutils.ContainerStatus(driver)
+    assert container_elts.container_status_stop.is_displayed(), "Expected stopped container"
+
+
+def test_pip_packages(driver: selenium.webdriver):
+    """
+    Test that pip packages install successfully.
+
+    Args:
+        driver
+    """
+    # project set up
+    testutils.log_in(driver)
+    time.sleep(2)
+    testutils.remove_guide(driver)
+    time.sleep(2)
+    testutils.create_project_without_base(driver)
+    time.sleep(2)
     # python 3 minimal base
-    test_project.py3_min_base()
+    testutils.add_py3_min_base(driver)
     # wait
     wait = WebDriverWait(driver, 200)
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     # pip packages
-    test_project.pip_package()
-    # wait
+    testutils.add_pip_package(driver)
+    # wait until container status is stopped
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     assert testutils.is_container_stopped(driver), "Expected stopped container"
 
+
     # check package version from environment
     package_info = driver.find_element_by_css_selector(".PackageDependencies__table-container").text
-    # parse the string to a list and extract information of package names and versions.
+    # parse the string to a list and extract information of package names and versions
     package_list = package_info.split("\n")[1::2]
     package_parse = [x.split(" ") for x in package_list]
-    # convert to dictionary with package names as key and versions as values.
+    # convert to dictionary with package names as key and versions as values
     package_environment = {x[0]: x[1] for x in package_parse}
     logging.info("Getting package versions from environment")
 
     # check pip packages version from jupyterlab
     driver.find_element_by_css_selector(".ContainerStatus__selected-tool").click()
-    time.sleep(10)
+    time.sleep(5)
     window_handles = driver.window_handles
     driver.switch_to.window(window_handles[1])
     time.sleep(5)
@@ -310,18 +185,21 @@ def test_pip_packages(driver):
                      " 'matplotlib', matplotlib.__version__)"
     actions.move_to_element(el).click(el).send_keys(package_script).perform()
     driver.find_element_by_css_selector(".jp-RunIcon").click()
+    time.sleep(5)
     # extract the output of package versions as string and parse to a list.
-    package_output = driver.find_element_by_css_selector(".jp-OutputArea-output").text.split(" ")
+    time.sleep(2)
+    package_output = driver.find_element_by_css_selector(".jp-OutputArea-output>pre").text.split(" ")
     # convert to dictionary with package names as key and versions as values.
     package_jupyter = dict(zip(package_output[::2], package_output[1::2]))
     logging.info("Getting package versions from jupyterlab")
     # check if package versions from environment and from jupyter notebook are same.
-    assert package_environment == package_jupyter, "Package versions need to match"
+    assert package_environment == package_jupyter, "Package versions match"
     time.sleep(10)
     # stop the container after the test is finished
     driver.switch_to.window(window_handles[0])
-    time.sleep(3)
+    time.sleep(5)
     testutils.stop_container(driver)
+    time.sleep(5)
     assert testutils.is_container_stopped(driver), "Expected stopped container"
 
 
@@ -340,33 +218,33 @@ def test_pip_packages(driver):
     assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"'''
 
 
-def test_valid_custom_docker(driver):
-    # set up
-    test_project = CreateProject(driver)
-    test_project.log_in()
-    test_project.remove_guide()
-    test_project.create_project_no_base()
-    # python 3 minimal base
-    test_project.py3_min_base()
-    # wait
-    wait = WebDriverWait(driver, 200)
+def test_valid_custom_docker(driver: selenium.webdriver):
+    """
+    Test valid custom Docker instructions.
+
+    Args:
+        driver
+    """
+    # project set up
+    testutils.log_in(driver)
+    time.sleep(2)
+    testutils.remove_guide(driver)
+    testutils.create_project_without_base(driver)
+    time.sleep(2)
+    # python 2 minimal base
+    testutils.add_py3_min_base(driver)
+    # wait until container status is stopped
+    wait = selenium.webdriver.support.ui.WebDriverWait(driver, 200)
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    # custom docker instructions
-    test_project.custom_docker_instructions()
-    # wait
+    # add custom docker instructions
+    testutils.add_valid_custom_docker(driver)
+    # wait until container status is stopped
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
+    # assert container status is stopped and 'Successfully tagged' is in footer
     assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
     assert "Successfully tagged" in driver.find_element_by_css_selector(".Footer__message-title").text, "Expected 'Successfully tagged' in footer"
 
 
-def validate_edge_build_version(self):
-    """ Compare selenium and requests edge build version """
-    # set up
-    CreateProject(driver)
-    # switch to api/ping
-    driver.get("http://localhost:10000/api/ping/")
-    selenium_edge_build_version = json.loads(driver.find_element_by_css_selector("pre").text)
-    assert selenium_edge_build_version == version_info, "selenium does not match requests edge build version"
 
 
 def test_example_success(driver):
@@ -405,8 +283,8 @@ if __name__ == '__main__':
     tests_collection = {}
 
     # You may edit this as need-be
-        
-    #methods_under_test = [test_all_bases, test_pip_packages, test_valid_custom_docker]
+    #methods_under_test = [test_edge_build_versions, test_py2_min_base, test_py3_min_base, test_py3_ds_base,
+    #                      test_rtidy_base, test_valid_custom_docker]
     methods_under_test = [test_pip_packages]
 
     for test_method in methods_under_test:
@@ -432,4 +310,3 @@ if __name__ == '__main__':
     print('\nTest Report\n')
     for test_name in tests_collection.keys():
         print(f' {tests_collection[test_name]["status"]:6s} :: {test_name} :: {tests_collection[test_name]["message"] or "n/a"}')
-

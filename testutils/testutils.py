@@ -1,18 +1,23 @@
+# Builtin imports
 import os
 import uuid
 
+# Library imports
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 def load_chrome_driver():
+    """ Return Chrome webdriver """
     return webdriver.Chrome()
 
 def load_chrome_driver_headless():
+    """ Return headless Chrome webdriver """
     options = Options()
     options.add_argument("--headless")
     return webdriver.Chrome(options=options)
 
 def load_firefox_driver():
+    """ Return Firefox webdriver """
     return webdriver.Firefox()
 
 def unique_project_name(prefix: str = "selenium-project"):
