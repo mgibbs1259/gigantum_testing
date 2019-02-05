@@ -11,12 +11,15 @@ from testutils import testutils
 
 
 # create project
-def log_in(driver: selenium.webdriver):
+def log_in(driver: selenium.webdriver) -> str:
     """
     Log in to Gigantum.
 
     Args:
         driver
+
+    Returns:
+        Username of user just logged in
     """
     driver.get("http://localhost:10000/projects/local#")
     logging.info("Logging in")
@@ -32,6 +35,8 @@ def log_in(driver: selenium.webdriver):
         auth0_elts.login_grey_button.click()
     except:
         pass
+
+    return username.strip()
 
 
 def remove_guide(driver: selenium.webdriver):
@@ -49,21 +54,26 @@ def remove_guide(driver: selenium.webdriver):
     guide_elts.helper_button.click()
 
 
-def create_project_without_base(driver: selenium.webdriver):
+def create_project_without_base(driver: selenium.webdriver) -> str:
     """
     Create a project without a base.
 
     Args:
         driver
+    
+    Returns:
+        Name of project just created
     """
-    logging.info("Creating a project without a base")
+    unique_project_name = testutils.unique_project_name()
+    logging.info(f"Creating a new project: {unique_project_name}")
     project_elts = elements.AddProjectElements(driver)
     project_elts.create_new_button.click()
     project_elts.project_title_input.click()
-    project_elts.project_title_input.send_keys(testutils.unique_project_name())
+    project_elts.project_title_input.send_keys(unique_project_name)
     project_elts.project_description_input.click()
     project_elts.project_description_input.send_keys(testutils.unique_project_description())
     project_elts.project_continue_button.click()
+    return unique_project_name
 
 
 # bases

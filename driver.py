@@ -73,6 +73,7 @@ if __name__ == '__main__':
                            help='Optional name of specific playbook')
     args = argparser.parse_args()
 
+    os.environ['GIGANTUM_HOME'] = os.path.expanduser('~/gigantum')
     playbooks = get_playbooks(args.test_path)
 
     failed = False

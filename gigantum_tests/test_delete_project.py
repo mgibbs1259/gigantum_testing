@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 
 # Library imports
+import docker
 import selenium
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -22,11 +23,11 @@ def test_delete_project(driver: selenium.webdriver, *args, **kwargs):
             driver
     """
     # project set up
-    testutils.log_in(driver)
+    username = testutils.log_in(driver)
     time.sleep(2)
     testutils.remove_guide(driver)
     time.sleep(2)
-    testutils.create_project_without_base(driver)
+    project_name = testutils.create_project_without_base(driver)
     # python 3 minimal base
     testutils.add_py3_min_base(driver)
     wait = WebDriverWait(driver, 200)
@@ -34,22 +35,36 @@ def test_delete_project(driver: selenium.webdriver, *args, **kwargs):
     # obtain project title
     full_project_title = driver.find_element_by_css_selector(".LabbookHeader__section--title").text
     project_title = full_project_title[full_project_title.index("/") + 1:]
+    
     # check that project path exists on file system
-    username, password = testutils.load_credentials()
-    username = username.strip()
-    project_path = os.path.join(str(Path.home()), f"gigantum/{username}/{username}/labbooks", project_title)
-    before_delete = os.path.exists(project_path)
-    assert before_delete == True, "Project not found in file system"
-    # delete project
+    project_path = os.path.join(os.environ['GIGANTUM_HOME'], username,
+                                username, 'labbooks', project_name)
+    assert os.path.exists(project_path), \
+           f"Project {project_name} should exist at {project_path}"
+   
+    dc = docker.from_env()
+    project_img = [img for img in dc.images.list()
+                   if 'gmlb-' in img.tag and project_name in img.tag]
+    assert len(project_img) == 1, f"Must be one docker tag for {project_name}"
+    project_img = project_img[0]
+
+    # Navigate to the "Delete Project" button and click it
     driver.find_element_by_css_selector(".BranchMenu__btn").click()
     time.sleep(1)
     driver.find_element_by_css_selector(".BranchMenu__item--delete").click()
     time.sleep(1)
     driver.find_element_by_css_selector("#deleteInput").send_keys(project_title)
     driver.find_element_by_css_selector(".DeleteLabbook > .ButtonLoader").click()
-    # check that project path does not exist on file system
     time.sleep(5)
-    after_delete = os.path.exists(project_path)
-    assert before_delete != after_delete, "Project not deleted from file system"
+
+    # Check all post conditions for delete:
+    # 1. Does not exist in filesystem, and
+    # 2. Docker image no longer exists
+
+    assert not os.path.exists(project_path), f"Project at {project_path} not deleted"
+    project_img = [img for img in dc.images.list()
+                   if 'gmlb-' in img.tag and project_name in img.tag]
+    assert len(project_img) == 0, \
+           f"Docker image for {project_path}: {project_img[0]} still exists"
 
 
