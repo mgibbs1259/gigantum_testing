@@ -1,4 +1,3 @@
-# Builtin imports
 import argparse
 import logging
 import pprint
@@ -8,7 +7,7 @@ import uuid
 import sys
 import os
 
-# Library imports
+import docker
 import selenium
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -17,7 +16,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import requests
 
-# Local packages
 import testutils
 
 TEST_ROOT = os.path.join(os.getcwd(), 'gigantum_tests')
@@ -78,6 +76,17 @@ def run_playbook(path):
     return test_collect
 
 
+def stop_project_containers(client):
+    containers = client.containers.list()
+    for c in containers:
+        for t in [c.image.tags]:
+            if 'gmlb-' in t:
+                logging.info(f"Stopping container for image {t}")
+                c.stop()
+    logging.info("Pruning all Docker containers")
+    logging.info(client.containers.prune())
+
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     argparser = argparse.ArgumentParser()
@@ -85,6 +94,7 @@ if __name__ == '__main__':
                            help='Optional name of specific playbook')
     args = argparser.parse_args()
 
+    docker_client = docker.from_env()
     playbooks = get_playbooks(args.test_path)
 
     failed = False
@@ -94,6 +104,7 @@ if __name__ == '__main__':
         if any([r[l]['status'].lower() != 'pass' for l in r]):
             failed = True
         full_results[pb] = r
+        stop_project_containers()
 
     print(f'\n\nTEST SUMMARY ({len(full_results)} tests)\n')
     for test_file in full_results.keys():
