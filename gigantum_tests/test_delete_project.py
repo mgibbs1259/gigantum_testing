@@ -43,8 +43,11 @@ def test_delete_project(driver: selenium.webdriver, *args, **kwargs):
            f"Project {project_name} should exist at {project_path}"
    
     dc = docker.from_env()
-    project_img = [img for img in dc.images.list()
-                   if 'gmlb-' in img.tag and project_name in img.tag]
+    project_img = []
+    for img in dc.images.list():
+        for t in img.tags:
+            if 'gmlb-' in t and project_name in t:
+                project_img.append(img)
     assert len(project_img) == 1, f"Must be one docker tag for {project_name}"
     project_img = project_img[0]
 
