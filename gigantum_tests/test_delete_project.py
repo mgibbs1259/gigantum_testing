@@ -47,9 +47,9 @@ def test_delete_project(driver: selenium.webdriver, *args, **kwargs):
     for img in dc.images.list():
         for t in img.tags:
             if 'gmlb-' in t and project_name in t:
+                logging.info(f"Found Docker image {t} for {project_name}")
                 project_img.append(img)
     assert len(project_img) == 1, f"Must be one docker tag for {project_name}"
-    project_img = project_img[0]
 
     # Navigate to the "Delete Project" button and click it
     logging.info("Navigating to 'Delete Project' and delete the project")
@@ -70,6 +70,7 @@ def test_delete_project(driver: selenium.webdriver, *args, **kwargs):
     for img in dc.images.list():
         for t in img.tags:
             if 'gmlb-' in t and project_name in t:
+                logging.error(f'Docker tag {t} still exists for deleted project {project_name}')
                 project_img.append(img)
     assert len(project_img) == 0, \
            f"Docker image for {project_path}: {project_img[0]} still exists"
