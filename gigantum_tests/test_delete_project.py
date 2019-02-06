@@ -65,8 +65,11 @@ def test_delete_project(driver: selenium.webdriver, *args, **kwargs):
     # 2. Docker image no longer exists
 
     assert not os.path.exists(project_path), f"Project at {project_path} not deleted"
-    project_img = [img for img in dc.images.list()
-                   if 'gmlb-' in img.tag and project_name in img.tag]
+    project_img = []
+    for img in dc.images.list():
+        for t in img.tags:
+            if 'gmlb-' in t and project_name in t:
+                project_img.append(img)
     assert len(project_img) == 0, \
            f"Docker image for {project_path}: {project_img[0]} still exists"
 
