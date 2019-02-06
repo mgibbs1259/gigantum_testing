@@ -2,7 +2,6 @@
 import logging
 import time
 import os
-from pathlib import Path
 
 # Library imports
 import docker
@@ -37,11 +36,12 @@ def test_delete_project(driver: selenium.webdriver, *args, **kwargs):
     project_title = full_project_title[full_project_title.index("/") + 1:]
     
     # check that project path exists on file system
+    logging.info("Checking that the project exists in the file system")
     project_path = os.path.join(os.environ['GIGANTUM_HOME'], username,
                                 username, 'labbooks', project_name)
     assert os.path.exists(project_path), \
            f"Project {project_name} should exist at {project_path}"
-   
+    logging.info("Finding project Docker image")
     dc = docker.from_env()
     project_img = []
     for img in dc.images.list():
@@ -52,6 +52,7 @@ def test_delete_project(driver: selenium.webdriver, *args, **kwargs):
     project_img = project_img[0]
 
     # Navigate to the "Delete Project" button and click it
+    logging.info("Navigating to 'Delete Project' and delete the project")
     driver.find_element_by_css_selector(".BranchMenu__btn").click()
     time.sleep(1)
     driver.find_element_by_css_selector(".BranchMenu__item--delete").click()
@@ -63,7 +64,7 @@ def test_delete_project(driver: selenium.webdriver, *args, **kwargs):
     # Check all post conditions for delete:
     # 1. Does not exist in filesystem, and
     # 2. Docker image no longer exists
-
+    logging.info("Checking that project path and project Docker image no longer exist")
     assert not os.path.exists(project_path), f"Project at {project_path} not deleted"
     project_img = []
     for img in dc.images.list():
