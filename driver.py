@@ -94,6 +94,8 @@ if __name__ == '__main__':
                            help='Optional name of specific playbook')
     args = argparser.parse_args()
 
+    # TODO - Remove this line shortly
+    os.environ['GIGANTUM_HOME'] = os.path.expanduser('~/gigantum/')
     docker_client = docker.from_env()
     playbooks = get_playbooks(args.test_path)
 
@@ -105,6 +107,9 @@ if __name__ == '__main__':
             failed = True
         full_results[pb] = r
         stop_project_containers(docker.from_env())
+    
+    logging.info("Cleaning up...")
+    testutils.cleanup()
 
     print(f'\n\nTEST SUMMARY ({len(full_results)} tests)\n')
     for test_file in full_results.keys():

@@ -64,7 +64,7 @@ def cleanup():
     by the test harness according to a given pattern: "selenium-project-"
     exists as a substring of the project name """
 
-    username = testutils.load_credentials()[0].strip()
+    username = load_credentials()[0].strip()
     workdir = os.path.join(os.environ['GIGANTUM_HOME'], username)
     project_paths = glob.glob(f'{workdir}/*/labbooks/selenium-project-*')
 
