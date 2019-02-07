@@ -1,6 +1,13 @@
 # Builtin imports
-import os
+import subprocess
+import logging
+import shutil
+import time
 import uuid
+import glob
+import uuid
+import sys
+import os
 
 # Library imports
 from selenium import webdriver
@@ -45,6 +52,46 @@ def is_container_stopped(driver):
     """ Check if the container is stopped """
     return driver.find_element_by_css_selector(".flex>.Stopped").is_displayed()
 
+
 def stop_container(driver):
     """ Stop container after test is finished """
     return driver.find_element_by_css_selector(".flex>.Running").click()
+
+
+def cleanup():
+    """ Cleanup all Docker containers and Gigantum projects made by
+    this Selenium test harness. It infers projects and images by
+    by the test harness according to a given pattern: "selenium-project-"
+    exists as a substring of the project name """
+
+    username = load_credentials()[0].strip()
+    workdir = os.path.join(os.environ['GIGANTUM_HOME'], username)
+    project_paths = glob.glob(f'{workdir}/*/labbooks/selenium-project-*')
+
+    # TODO - Use actual docker client
+    r = subprocess.run('docker images'.split(), stdout=subprocess.PIPE)
+    docker_image_pairs = [(l.split()[0], l.split()[2]) for l in r.stdout.decode().split('\n') if l]
+    docker_image_pairs = [p for p in docker_image_pairs
+                          if f'gmlb-{username}' in p[0] and 'selenium-project-' in p[0]]
+
+    logging.info('Warning! Deleting the following Gigantum projects and images')
+    for i, e in enumerate(project_paths):
+        logging.info(f'  {i+1:2d}: {e}')
+
+    for docker_id in set([l[0] for l in docker_image_pairs]):
+        cmd = f'docker rmi {docker_id}'
+        try:
+            p = subprocess.run(cmd.split(), stderr=subprocess.PIPE,
+                               stdout=subprocess.PIPE, check=True)
+            logging.info(f'  Deleted docker image {docker_id}')
+        except subprocess.CalledProcessError as e:
+            logging.info(f'Error in command: {cmd}', e)
+
+    time.sleep(1)
+    for project_path in project_paths:
+        try:
+            shutil.rmtree(project_path)
+            logging.info(f'  Deleted project path {project_path}')
+        except Exception as e:
+            logging.info(f"Error deleting {project_path}: {e}")
+

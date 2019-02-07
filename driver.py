@@ -1,11 +1,10 @@
-# Builtin imports
 import argparse
 import logging
 import time
 import sys
 import os
 
-# Local packages
+
 import testutils
 
 TEST_ROOT = os.path.join(os.getcwd(), 'gigantum_tests')
@@ -29,13 +28,23 @@ def load_test_methods(path):
     return test_methods
 
 
-def run_playbook(path):
+def run_playbook(path, headless, firefox):
     test_methods = load_test_methods(path)
     test_collect = {t.__name__: None for t in test_methods}
+
+    if headless and firefox:
+        logging.error('Cannot run firefox in headless mode!')
+        sys.exit(1)
    
     for t in test_methods:
         logging.info(f'Running {path}:{t.__name__} ...')
-        driver = testutils.load_chrome_driver()
+        if firefox:
+            driver = testutils.load_firefox_driver()
+        elif headless:
+            driver = testutils.load_chrome_driver_headless()
+        else:
+            driver = testutils.load_chrome_driver()
+
         driver.implicitly_wait(5)
         driver.set_window_size(1440, 1000)
         try:
@@ -66,23 +75,45 @@ def run_playbook(path):
     return test_collect
 
 
+def stop_project_containers(client):
+    containers = client.containers.list()
+    for c in containers:
+        for t in [c.image.tags]:
+            if 'gmlb-' in t:
+                logging.info(f"Stopping container for image {t}")
+                c.stop()
+    logging.info("Pruning all Docker containers")
+    logging.info(client.containers.prune())
+
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     argparser = argparse.ArgumentParser()
+    argparser.add_argument('--headless', default=False, action='store_true',
+                           help='Optional name of specific playbook')
+    argparser.add_argument('--firefox', default=False, action='store_true',
+                           help='Run using Firefox driver (Chrome default)')
     argparser.add_argument('test_path', nargs='?', type=str, default="",
                            help='Optional name of specific playbook')
     args = argparser.parse_args()
 
-    os.environ['GIGANTUM_HOME'] = os.path.expanduser('~/gigantum')
+
+    # TODO - Remove this line shortly
+    os.environ['GIGANTUM_HOME'] = os.path.expanduser('~/gigantum/')
+    docker_client = docker.from_env()
     playbooks = get_playbooks(args.test_path)
 
     failed = False
     full_results = {}
     for pb in playbooks:
-        r = run_playbook(pb)
+        r = run_playbook(pb, args.headless, args.firefox)
         if any([r[l]['status'].lower() != 'pass' for l in r]):
             failed = True
         full_results[pb] = r
+        stop_project_containers(docker_client)
+    
+    logging.info("Cleaning up...")
+    testutils.cleanup()
 
     print(f'\n\nTEST SUMMARY ({len(full_results)} tests)\n')
     for test_file in full_results.keys():
