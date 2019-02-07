@@ -104,7 +104,7 @@ if __name__ == '__main__':
         if any([r[l]['status'].lower() != 'pass' for l in r]):
             failed = True
         full_results[pb] = r
-        stop_project_containers()
+        stop_project_containers(docker.from_env())
 
     print(f'\n\nTEST SUMMARY ({len(full_results)} tests)\n')
     for test_file in full_results.keys():
