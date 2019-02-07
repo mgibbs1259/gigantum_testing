@@ -120,7 +120,7 @@ if __name__ == '__main__':
         if any([r[l]['status'].lower() != 'pass' for l in r]):
             failed = True
         full_results[pb] = r
-        stop_project_containers(docker.from_env())
+        stop_project_containers(docker_client)
     
     logging.info("Cleaning up...")
     testutils.cleanup()
