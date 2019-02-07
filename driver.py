@@ -3,6 +3,7 @@ import logging
 import time
 import sys
 import os
+import docker
 
 
 import testutils
