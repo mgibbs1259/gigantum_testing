@@ -39,13 +39,23 @@ def load_test_methods(path):
     return test_methods
 
 
-def run_playbook(path):
+def run_playbook(path, headless, firefox):
     test_methods = load_test_methods(path)
     test_collect = {t.__name__: None for t in test_methods}
+
+    if headless and firefox:
+        logging.error('Cannot run firefox in headless mode!')
+        sys.exit(1)
    
     for t in test_methods:
         logging.info(f'Running {path}:{t.__name__} ...')
-        driver = testutils.load_chrome_driver()
+        if firefox:
+            driver = testutils.load_firefox_driver()
+        elif headless:
+            driver = testutils.load_chrome_driver_headless()
+        else:
+            driver = testutils.load_chrome_driver()
+
         driver.implicitly_wait(5)
         driver.set_window_size(1440, 1000)
         try:
@@ -90,6 +100,10 @@ def stop_project_containers(client):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     argparser = argparse.ArgumentParser()
+    argparser.add_argument('--headless', default=False, action='store_true',
+                           help='Optional name of specific playbook')
+    argparser.add_argument('--firefox', default=False, action='store_true',
+                           help='Run using Firefox driver (Chrome default)')
     argparser.add_argument('test_path', nargs='?', type=str, default="",
                            help='Optional name of specific playbook')
     args = argparser.parse_args()
@@ -102,7 +116,7 @@ if __name__ == '__main__':
     failed = False
     full_results = {}
     for pb in playbooks:
-        r = run_playbook(pb)
+        r = run_playbook(pb, args.headless, args.firefox)
         if any([r[l]['status'].lower() != 'pass' for l in r]):
             failed = True
         full_results[pb] = r
