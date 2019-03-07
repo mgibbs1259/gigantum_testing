@@ -21,21 +21,21 @@ def test_delete_project(driver: selenium.webdriver, *args, **kwargs):
         Args:
             driver
     """
-    # project set up
+    # Project set up
     username = testutils.log_in(driver)
     time.sleep(2)
     testutils.remove_guide(driver)
     time.sleep(2)
     project_name = testutils.create_project_without_base(driver)
-    # python 3 minimal base
+    # Python 3 minimal base
     testutils.add_py3_min_base(driver)
     wait = WebDriverWait(driver, 200)
-    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    # obtain project title
-    full_project_title = driver.find_element_by_css_selector(".LabbookHeader__section--title").text
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex > .Stopped")))
+    # Obtain project title
+    full_project_title = driver.find_element_by_css_selector(".TitleSection__namespace-title").text
     project_title = full_project_title[full_project_title.index("/") + 1:]
     
-    # check that project path exists on file system
+    # Check that project path exists on file system
     logging.info("Checking that the project exists in the file system")
     project_path = os.path.join(os.environ['GIGANTUM_HOME'], username,
                                 username, 'labbooks', project_name)
@@ -53,11 +53,11 @@ def test_delete_project(driver: selenium.webdriver, *args, **kwargs):
 
     # Navigate to the "Delete Project" button and click it
     logging.info("Navigating to 'Delete Project' and delete the project")
-    driver.find_element_by_css_selector(".BranchMenu__btn").click()
-    time.sleep(1)
-    driver.find_element_by_css_selector(".BranchMenu__item--delete").click()
-    time.sleep(1)
-    driver.find_element_by_css_selector("#deleteInput").send_keys(project_title)
+    driver.find_element_by_css_selector(".ActionsMenu__btn").click()
+    time.sleep(3)
+    driver.find_element_by_css_selector(".ActionsMenu__item--delete").click()
+    time.sleep(3)
+    driver.find_element_by_css_selector("#deleteInput").send_keys(project_title.lstrip())
     driver.find_element_by_css_selector(".DeleteLabbook > .ButtonLoader").click()
     time.sleep(5)
 
