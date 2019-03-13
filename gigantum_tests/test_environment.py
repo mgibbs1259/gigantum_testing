@@ -34,8 +34,10 @@ def test_pip_packages(driver: selenium.webdriver, *args, **kwargs):
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
     # pip packages
     testutils.add_pip_package(driver)
+    time.sleep(2)
     # wait until container status is stopped
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
+    time.sleep(2)
     assert testutils.is_container_stopped(driver), "Expected stopped container"
 
 
@@ -49,7 +51,7 @@ def test_pip_packages(driver: selenium.webdriver, *args, **kwargs):
     logging.info("Getting package versions from environment")
 
     # check pip packages version from jupyterlab
-    driver.find_element_by_css_selector(".ContainerStatus__selected-tool").click()
+    driver.find_element_by_css_selector(".Btn--text").click()
     time.sleep(10)
     window_handles = driver.window_handles
     driver.switch_to.window(window_handles[1])
