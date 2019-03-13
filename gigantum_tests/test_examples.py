@@ -1,6 +1,5 @@
 
 
-
 def test_simple_success(*args, **kwargs):
     """ Asserts trivially true as a demonstration. """
     assert True, 'This will never fail'

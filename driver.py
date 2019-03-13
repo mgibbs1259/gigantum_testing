@@ -1,20 +1,10 @@
 import argparse
 import logging
-import pprint
 import time
-import json
-import uuid
 import sys
 import os
-
 import docker
-import selenium
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import requests
+
 
 import testutils
 
@@ -60,7 +50,7 @@ def run_playbook(path, headless, firefox):
         driver.set_window_size(1440, 1000)
         try:
             t0 = time.time()
-            result = t()
+            t(driver)
             tfin = time.time()
             logging.info(f'PASS -- {path}:{t.__name__} after {tfin-t0:.2f}s')
             test_collect[t.__name__] = {
@@ -107,6 +97,7 @@ if __name__ == '__main__':
     argparser.add_argument('test_path', nargs='?', type=str, default="",
                            help='Optional name of specific playbook')
     args = argparser.parse_args()
+
 
     # TODO - Remove this line shortly
     os.environ['GIGANTUM_HOME'] = os.path.expanduser('~/gigantum/')
