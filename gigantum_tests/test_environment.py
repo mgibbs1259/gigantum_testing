@@ -31,23 +31,21 @@ def test_pip_packages(driver: selenium.webdriver, *args, **kwargs):
     testutils.add_py3_min_base(driver)
     # wait
     wait = WebDriverWait(driver, 200)
-    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex > .Stopped")))
     # pip packages
     testutils.add_pip_package(driver)
     time.sleep(2)
     # wait until container status is stopped
-    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    time.sleep(2)
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex > .Stopped")))
     assert testutils.is_container_stopped(driver), "Expected stopped container"
 
-
     # check package versions from environment
-    package_info = driver.find_element_by_css_selector(".PackageDependencies__table-container").text
+    package_info = driver.find_element_by_css_selector(".PackageDependencies__table").text
     # parse the string to a list and extract information of package names and versions
     package_list = package_info.split("\n")[1::2]
     package_parse = [x.split(" ") for x in package_list]
     # convert to dictionary with package names as key and versions as values
-    package_environment = {x[0]: x[1] for x in package_parse}
+    package_environment = {x[0]: x[1] for x in package_parse if len(x) > 1}
     logging.info("Getting package versions from environment")
 
     # check pip packages version from jupyterlab
@@ -56,7 +54,7 @@ def test_pip_packages(driver: selenium.webdriver, *args, **kwargs):
     window_handles = driver.window_handles
     driver.switch_to.window(window_handles[1])
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "[title = code]")))
-    driver.find_element_by_css_selector("[data-category = Notebook]").click()
+    driver.find_element_by_css_selector(".jp-LauncherCard-label").click()
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".CodeMirror-line")))
     el = driver.find_element_by_css_selector(".CodeMirror-line")
     actions = ActionChains(driver)
@@ -69,22 +67,21 @@ def test_pip_packages(driver: selenium.webdriver, *args, **kwargs):
     driver.find_element_by_css_selector(".jp-RunIcon").click()
     # extract the output of package versions as string and parse to a list.
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".jp-mod-active")))
-    package_output = driver.find_element_by_css_selector(".jp-OutputArea-output>pre").text.split(" ")
+    package_output = driver.find_element_by_css_selector(".jp-OutputArea-output > pre").text.split(" ")
     # convert to dictionary with package names as key and versions as values.
     package_jupyter = dict(zip(package_output[::2], package_output[1::2]))
     logging.info("Getting package versions from jupyterlab")
     # check if package versions from environment and from jupyter notebook are same.
     assert package_environment == package_jupyter, "Package versions match"
-    # stop the container after the test is finished
-    driver.switch_to.window(window_handles[0])
-    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Running")))
-    testutils.stop_container(driver)
-    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    assert testutils.is_container_stopped(driver), "Expected stopped container"
-
-
 
     '''
+    # stop the container after the test is finished
+    driver.switch_to.window(window_handles[0])
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex > .Running")))
+    testutils.stop_container(driver)
+    wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex > .Stopped")))
+    assert testutils.is_container_stopped(driver), "Expected stopped container"
+
     # conda3 package
     test_project.conda3_package()
     # wait 
@@ -95,7 +92,8 @@ def test_pip_packages(driver: selenium.webdriver, *args, **kwargs):
     test_project.apt_package()
     # wait 
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".flex>.Stopped")))
-    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"'''
+    assert driver.find_element_by_css_selector(".flex>.Stopped").is_displayed(), "Expected stopped container"
+    '''
 
 
 def test_valid_custom_docker(driver: selenium.webdriver, *args, **kwargs):
