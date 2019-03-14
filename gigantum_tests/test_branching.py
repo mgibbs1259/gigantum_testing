@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO)
 
 def test_create_local_branch(driver: selenium.webdriver, *args, **kwargs):
     """
-    Test the creation of a branch.
+    Test the creation of a local branch.
 
     Args:
         driver
@@ -37,13 +37,15 @@ def test_create_local_branch(driver: selenium.webdriver, *args, **kwargs):
     driver.find_element_by_css_selector("#CreateBranchName").send_keys("branch")
     driver.find_element_by_css_selector(".CreateBranch_navItem > .ButtonLoader").click()
     time.sleep(3)
-    # assert that current branch is new branch and local only in upper left
+    # assert that current branch is new branch and local in upper left
     assert "branch" == driver.find_element_by_css_selector(".BranchMenu__dropdown-text").text, "Expected to be on newly created branch, upper left"
     assert True == True if driver.find_element_by_css_selector(".BranchMenu__status--local") else False, "Expected newly created branch to be local only, upper left"
     # open branch manager
     time.sleep(5)
     driver.find_element_by_css_selector(".BranchMenu__buttons > .BranchMenu__btn--manage").click()
     time.sleep(2)
-    # assert that current branch is new branch and local only in branch manager
+    # assert that current branch is new branch and local in branch manager
     assert "branch" == driver.find_element_by_css_selector(".Branches__branchname").text, "Expected to be on newly created branch, branch manager"
     assert True == True if driver.find_element_by_css_selector(".Branches__status--local") else False, "Expected newly created branch to be local only, branch manager"
+
+
